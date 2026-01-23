@@ -54,4 +54,3 @@ class Joueur:
             self.get_main().ajouter_carte(carte)
         for carte in self.main.get_cartes():
             carte.print()
-        
