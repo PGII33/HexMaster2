@@ -48,28 +48,31 @@ Un kill rapporte des Points d'Inv (PI)
 Le contrôle de case rapporte des PI
 
 ### Gestion d'un tour
-1. Le joueur gagne X PI (valeur à déterminer)
-2. Le joueur peut placer des cartes / jouer des entites
-3. Le joueur déclare la fin du tour
+1. Le joueur gagne X PI (valeur à déterminer)  
+2. Le joueur peut placer des cartes / jouer des entites  
+3. Le joueur déclare la fin du tour  
 
 ## Créer un environnement virtuel
 On commence par générer un environnement virtuel avec la commande  
-python3 -m venv .venv
+python3 -m venv .venv  
 
 Ensuite on l'active  
-source .venv/bin/activate
+source .venv/bin/activate  
 
 Puis on installe les librairies  
-pip install -r requirements.txt
+pip install -r requirements.txt  
 
 ## Lancer le jeu avec python
 
 Pour lancer le jeu avec python, on traite le jeu comme une bibliothèque, il faut donc utiliser :  
-python -m src.main
+python -m src.main  
 
 ## Lancer les tests
 Tests de fonctions :  
-python3 -m unittest discover
+python3 -m unittest discover  
 
 Coverage :  
-pytest --cov=src
+pytest --cov=src  
+
+Pour Coverage avec le détail des lignes non exécutées :  
+pytest --cov=src --cov-report=term-missing  

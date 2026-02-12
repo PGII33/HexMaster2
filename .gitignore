@@ -14,7 +14,3 @@ __pycache__/
 # IDE files
 .idea/
 .vscode/
-
-# data and assets
-assets/
-tests/
