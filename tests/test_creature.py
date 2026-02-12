@@ -8,7 +8,7 @@ from src.creature import Creature
 from tests.utils import generate_random_string, MIN_INT, MAX_INT, BOUCLE_TEST, TAILLE_STR
 
 class TestCreature(unittest.TestCase):
-    def test_init(self):
+    def test__init__(self):
         for _ in range(BOUCLE_TEST):
             pv = randint(MIN_INT, MAX_INT)
             nom = generate_random_string(TAILLE_STR)
@@ -43,6 +43,27 @@ class TestCreature(unittest.TestCase):
             creature.set_mouv(new_mouv)
             self.assertEqual(creature.get_mouv(), new_mouv)
 
+    def test_get_mal_invocation(self):
+        values = [True, False]
+        for v in values:
+            creature = Creature(pv=0, nom="", cout=0, pos=(0, 0), equipe=0,
+                                combat=0, demolition=0, degradation=0, portee=0,
+                                control=0, mouv=0)
+            creature.set_mal_invocation(v)
+            self.assertEqual(creature.get_mal_invocation(), v)
+
+    def test_set_mal_invocation(self):
+        values = [True, False]
+        for v1 in values:
+            for v2 in values:
+                creature = Creature(pv=0, nom="", cout=0, pos=(0, 0), equipe=0,
+                                    combat=0, demolition=0, degradation=0, portee=0,
+                                    control=0, mouv=0)
+                creature.set_mal_invocation(v1)
+                self.assertEqual(creature.get_mal_invocation(), v1)
+                creature.set_mal_invocation(v2)
+                self.assertEqual(creature.get_mal_invocation(), v2)
+
     def test_est_creature(self):
         for _ in range(BOUCLE_TEST):
             creature = Creature(pv=0, nom="", cout=0, pos=(0, 0), equipe=0,
@@ -50,5 +71,20 @@ class TestCreature(unittest.TestCase):
                                 control=0, mouv=0)
             self.assertTrue(creature.est_creature())
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_debut_tour(self):
+        for _ in range(BOUCLE_TEST):
+            mouv=randint(1, MAX_INT)
+            creature = Creature(pv=0, nom="", cout=0, pos=(0, 0), equipe=0,
+                                combat=0, demolition=0, degradation=0, portee=0,
+                                control=0, mouv=mouv)
+            creature.set_mouv(mouv-randint(1, mouv))
+            creature.debut_tour()
+            self.assertEqual(creature.get_mouv(), creature.mouv)
+
+    def test_fin_tour(self):
+        for _ in range(BOUCLE_TEST):
+            creature = Creature(pv=0, nom="", cout=0, pos=(0, 0), equipe=0,
+                                combat=0, demolition=0, degradation=0, portee=0,
+                                control=0, mouv=randint(MIN_INT, MAX_INT))
+            creature.fin_tour()
+            self.assertFalse(creature.get_mal_invocation())

@@ -6,8 +6,8 @@ from sys import maxsize as MAX_INT
 
 MIN_INT = -MAX_INT - 1
 
-BOUCLE_TEST = 10
-TAILLE_STR = 10
+BOUCLE_TEST = 100
+TAILLE_STR = 100
 
 def generate_random_string(length:int) -> str:
     """ Generate a random string of given length (the string only contains letters) """
