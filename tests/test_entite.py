@@ -50,6 +50,3 @@ class TestEntite(unittest.TestCase):
                             control=initial_control)
             entite.set_control(new_control)
             self.assertEqual(entite.get_control(), new_control)
-
-if __name__ == '__main__':
-    unittest.main()

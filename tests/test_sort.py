@@ -21,6 +21,3 @@ class TestSort(unittest.TestCase):
         for _ in range(BOUCLE_TEST):
             sort = Sort(nom="", pos=(0, 0), cout=0, equipe=0, comp=[])
             self.assertTrue(sort.est_sort())
-
-if __name__ == '__main__':
-    unittest.main()

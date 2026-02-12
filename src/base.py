@@ -16,10 +16,6 @@ class Base:
         self.sprite_path = sprite_path
         self.carte_path = carte_path
 
-    def __str__(self):
-        """ Représentation en chaîne de caractères """
-        return f"{self.nom} (Pos: {self.pos}, Cout: {self.cout}, Equipe: {self.equipe})"
-
     def get_nom(self):
         """ Retourne le nom """
         return self.nom

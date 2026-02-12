@@ -133,7 +133,3 @@ class TestBase(unittest.TestCase):
         for _ in range(BOUCLE_TEST):
             base = Base(nom="", pos=(0, 0), cout=0, equipe=0, comp=[])
             self.assertFalse(base.est_sort())
-
-
-if __name__ == '__main__':
-    unittest.main()

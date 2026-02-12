@@ -30,6 +30,3 @@ class TestBatiment(unittest.TestCase):
                                 combat=0, demolition=0, degradation=0, portee=0,
                                 control=0)
             self.assertTrue(batiment.est_batiment())
-
-if __name__ == '__main__':
-    unittest.main()

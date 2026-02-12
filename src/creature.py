@@ -21,10 +21,6 @@ class Creature(Unite):
         self.mouv_max = mouv  # Points de mouvements maximum
         self.mal_invocation = False  # True si vient d'être invoqué
 
-    def __str__(self):
-        """ Représentation en chaîne de caractères """
-        return f"Creature: {self.nom} (Pos: {self.pos}, PV: {self.pv}, Cout: {self.cout}, Equipe: {self.equipe}, Mouv: {self.mouv})"
-
     def get_mouv(self):
         """ Retourne les points de mouvement de l'unite """
         return self.mouv

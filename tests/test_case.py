@@ -45,6 +45,3 @@ class TestCase(unittest.TestCase):
     def test_appliquer_control(self):
         """ Pas implémenté """ #TODO: Implémenter
         self.skipTest("Pas implémenté")
-
-if __name__ == '__main__':
-    unittest.main()
