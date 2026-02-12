@@ -96,11 +96,27 @@ class TestBase(unittest.TestCase):
 
     def test_retirer_competence(self):
         for _ in range(BOUCLE_TEST):
-            nom_comp = generate_random_string(TAILLE_STR)
-            comp = Competence(duree=0, nom_effet=nom_comp, phase=choice(list(PhaseTour)))
-            base = Base(nom="", pos=(0, 0), cout=0, equipe=0, comp=[comp])
+            comps = []
+            rng = randint(1, BOUCLE_TEST)
+            for _ in range(rng):
+                nom_comp = generate_random_string(TAILLE_STR)
+                comp = Competence(duree=0, nom_effet=nom_comp, phase=choice(list(PhaseTour)))
+                comps.append(comp)
+
+            nom_comp_qui_existe_pas = generate_random_string(max(1, TAILLE_STR-1)) # Si pas la même taille alors différent
+            comp_qui_existe_pas = Competence(duree=0, nom_effet=nom_comp_qui_existe_pas, phase=choice(list(PhaseTour)))
+            comp = choice(comps)
+            base = Base(nom="", pos=(0, 0), cout=0, equipe=0, comp=comps)
+
+            base.retirer_competence(comp_qui_existe_pas)
+            self.assertNotIn(comp_qui_existe_pas, base.get_comp())
+
+            for comp in comps:
+                self.assertIn(comp, base.get_comp())
+
             base.retirer_competence(comp)
             self.assertNotIn(comp, base.get_comp())
+
 
     def test_get_carte_path(self):
         for _ in range(BOUCLE_TEST):
