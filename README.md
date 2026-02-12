@@ -1,6 +1,6 @@
 # Hexmaster2
 
-## Faction
+## Faction  
 Une faction est un ensemble de créatures, bâtiments et cases.
 
 ## Statistiques
@@ -29,7 +29,7 @@ Compétences (Comp), des effets divers et variés
 
 ## Mode de jeu
 
-### Classique
+### Classique
 Tuer tout les ennemis ou obtenir le contrôle d'une proportion de cases
 
 ### Contrôle de points
@@ -47,7 +47,7 @@ Une ressource nommé "Inv", qui permet d'invoquer
 Un kill rapporte des Points d'Inv (PI)
 Le contrôle de case rapporte des PI
 
-### Gestion d'un tour
+### Gestion d'un tour
 1. Le joueur gagne X PI (valeur à déterminer)  
 2. Le joueur peut placer des cartes / jouer des entites  
 3. Le joueur déclare la fin du tour  
@@ -65,7 +65,8 @@ pip install -r requirements.txt
 ## Lancer le jeu avec python
 
 Pour lancer le jeu avec python, on traite le jeu comme une bibliothèque, il faut donc utiliser :  
-python -m src.main  
+python -m src.main [mode]  
+mode: [playground / demo]  
 
 ## Lancer les tests
 Tests de fonctions :  
