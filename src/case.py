@@ -18,10 +18,6 @@ class Case(Entite):
                          carte_path=carte_path)
         self.control_max = control_max
 
-    def __str__(self):
-        """ Représentation en chaîne de caractères """
-        return f"Case: {self.nom} (Pos: {self.pos}, PV: {self.pv}, Cout: {self.cout}, Equipe: {self.equipe})"
-
     def get_control_max(self):
         """ Retourne la valeur maximale de control """
         return self.control_max
