@@ -10,3 +10,11 @@ __pycache__/
 
 # pylint
 .pylintrc
+
+# IDE files
+.idea/
+.vscode/
+
+# data and assets
+assets/
+tests/

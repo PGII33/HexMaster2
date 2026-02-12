@@ -1,0 +1,26 @@
+{
+  "id": "feu de camp",
+  "nom": "Feu de camp",
+  "type": "batiment",
+  "sprite": "assets/sprites/batiments/feu de camp.png",
+  "carte": "assets/cartes/batiments/feu de camp.png",
+  
+  "stats": {
+    "pv": 2,
+    "cout": 2,
+    "combat": 0,
+    "demolition": 0,
+    "degradation": 0,
+    "portee": 0,
+    "control": 1
+  },
+  
+    "competences": [
+    {
+      "nom": "confort",
+      "phase": "DEBUT_TOUR"
+    }
+  ],
+
+  "description": "Un feu de camp, très reposant."
+}

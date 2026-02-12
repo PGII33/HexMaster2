@@ -1,0 +1,13 @@
+{
+  "id": "foret",
+  "nom": "Foret",
+  "type": "case",
+  
+  "stats": {
+    "pv": 4,
+    "cout": 1,
+    "control_max": 3
+  },
+  
+  "description": "Une fôret dense"
+}

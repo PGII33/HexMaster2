@@ -1,0 +1,14 @@
+{
+  "id": "terrain",
+  "nom": "Terrain",
+  "type": "case",
+  "carte": "assets/cartes/cases/terrain.png",
+  
+  "stats": {
+    "pv": 3,
+    "cout": 0,
+    "control_max": 4
+  },
+  
+  "description": "Case sans particularité"
+}

@@ -6,12 +6,11 @@ from src.base import Base
 class Sort(Base):
     """ Classe representant un sort """
     def __init__(self, nom:str, pos:tuple[int, int], cout:int, equipe:int,
-                 combat:int, demolition:int, degradation:int, portee:int,
-                 comp:Competence):
+                 comp:Competence, sprite_path:str=None, carte_path:str=None):
         """ Initialise le sort """
         super().__init__(nom=nom, pos=pos, cout=cout,
-                         equipe=equipe, combat=combat, demolition=demolition,
-                         degradation=degradation, portee=portee, comp=comp)
+                         equipe=equipe, comp=comp, sprite_path=sprite_path,
+                         carte_path=carte_path)
 
     @override
     def est_sort(self):

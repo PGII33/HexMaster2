@@ -1,23 +1,20 @@
 """ Fichier de gestion de base """
 
 from src.competence import Competence
-from src.phase import PhaseTour
 
 class Base:
     """ Classe de base """
     def __init__(self, nom:str, pos:tuple[int, int], cout:int,
-                 equipe:int, combat:int, demolition:int, degradation:int,
-                 portee:int, comp:list[Competence]=None):
+                 equipe:int, comp:list[Competence]=None, sprite_path:str=None,
+                 carte_path:str=None):
         """ Initialise la base """
         self.nom = nom
         self.pos = pos
         self.cout = cout
         self.equipe = equipe
-        self.combat = combat
-        self.demolition = demolition
-        self.degradation = degradation
-        self.portee = portee
         self.comp = comp if comp is not None else []
+        self.sprite_path = sprite_path
+        self.carte_path = carte_path
 
     def __str__(self):
         """ Représentation en chaîne de caractères """
@@ -27,69 +24,45 @@ class Base:
         """ Retourne le nom """
         return self.nom
 
-    def get_pos(self):
-        """ Retourne la position axiale """
-        return self.pos
-
-    def get_cout(self):
-        """ Retourne le cout """
-        return self.cout
-
-    def get_portee(self):
-        """ retourne la portée """
-        return self.portee
-
-    def get_equipe(self):
-        """ Retourne l'equipe """
-        return self.equipe
-
-    def get_combat(self):
-        """ Retourne la valeur de combat """
-        return self.combat
-
-    def get_demolition(self):
-        """ Retourne la valeur de demolition """
-        return self.demolition
-
-    def get_degradation(self):
-        """ Retourne la valeur de degradation """
-        return self.degradation
-
-    def get_comp(self):
-        """ Retourne les competences """
-        return self.comp
-
     def set_nom(self, nom:str):
         """ Modifie le nom """
         self.nom = nom
+
+    def get_pos(self):
+        """ Retourne la position axiale """
+        return self.pos
 
     def set_pos(self, pos:tuple[int, int]):
         """ Modifie la position axiale """
         self.pos = pos
 
+    def get_cout(self):
+        """ Retourne le cout """
+        return self.cout
+
     def set_cout(self, cout:int):
         """ Modifie le cout """
         self.cout = cout
 
-    def set_portee(self, portee:int):
-        """ Modifie la portée """
-        self.portee = portee
+    def get_sprite_path(self):
+        """ Retourne le chemin du sprite """
+        return self.sprite_path
+
+    def get_carte_path(self):
+        """ Retourne le chemin de la carte """
+        return self.carte_path
+
+    def get_equipe(self):
+        """ Retourne l'equipe """
+        return self.equipe
 
     def set_equipe(self, equipe:int):
         """ Modifie l'equipe """
         self.equipe = equipe
 
-    def set_combat(self, combat:int):
-        """ Modifie la valeur de combat """
-        self.combat = combat
-
-    def set_demolition(self, demolition:int):
-        """ Modifie la valeur de demolition """
-        self.demolition = demolition
-
-    def set_degradation(self, degradation:int):
-        """ Modifie la valeur de degradation """
-        self.degradation = degradation
+    def get_comp(self):
+        """ Retourne les competences """
+        return self.comp
 
     def set_comp(self, comp:list[Competence]):
         """ Modifie les competences """
@@ -121,40 +94,3 @@ class Base:
     def est_case(self):
         """ Retourne vrai si l'entite est une case """
         return False
-
-# Actions
-
-    def debut_tour(self):
-        """ Actions a effectuer au debut du tour """
-        for comp in self.comp:
-            if comp.get_phase() ==  PhaseTour.DEBUT_TOUR:
-                comp.appliquer_effet(self)
-
-    def fin_tour(self):
-        """ Actions a effectuer a la fin du tour """
-        for comp in self.comp:
-            if comp.get_phase() ==  PhaseTour.FIN_TOUR:
-                comp.appliquer_effet(self)
-
-    def avant_attaque(self):
-        """ Actions a effectuer avant une attaque """
-
-    def apres_attaque(self):
-        """ Actions a effectuer apres une attaque """
-
-    def attaquer(self, cible):
-        """ Attaque une cible """
-        self.avant_attaque()
-        if cible.est_creature():
-            cible.set_pv(cible.get_pv() - self.get_combat())
-            if cible.get_pv() <= 0:
-                cible.set_en_vie(False)
-        elif cible.est_batiment():
-            cible.set_pv(cible.get_pv() - self.get_demolition())
-            if cible.get_pv() <= 0:
-                cible.set_en_vie(False)
-        elif cible.est_case():
-            cible.set_pv(cible.get_pv() - self.get_degradation())
-            if cible.get_pv() <= 0:
-                cible.set_en_vie(False)
-        self.apres_attaque()

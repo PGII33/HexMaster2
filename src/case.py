@@ -3,30 +3,54 @@ from typing_extensions import override
 from src.entite import Entite
 from src.competence import Competence
 
+
 class Case(Entite):
     """ Case du jeu """
-    def __init__(self, pv:int, nom:str, pos:tuple[int, int],
-                 cout:int, equipe:int, combat:int, demolition:int,
-                 degradation:int, portee:int, control:int, comp:list[Competence]=None):
+
+    def __init__(self, pv: int, nom: str, pos: tuple[int, int],
+                 cout: int, equipe: int, control_max: int, control:int=0,
+                 comp: list[Competence] = None, sprite_path: str = None,
+                 carte_path: str = None):
         """ Initialise la case """
-        super().__init__(pv=pv, nom=nom, pos=pos, cout=cout, equipe=equipe, combat=combat,
-                         demolition=demolition, degradation=degradation, control=control,
-                         portee=portee, comp=comp)
-        self.occupe = False # Indique si une unite est sur la case
+        super().__init__(pv=pv, nom=nom, pos=pos, cout=cout, equipe=equipe,
+                         control=control,
+                         comp=comp, sprite_path=sprite_path,
+                         carte_path=carte_path)
+        self.control_max = control_max
 
     def __str__(self):
         """ Représentation en chaîne de caractères """
         return f"Case: {self.nom} (Pos: {self.pos}, PV: {self.pv}, Cout: {self.cout}, Equipe: {self.equipe})"
 
-    def est_occupe(self):
-        """ Retourne si la case est occupee """
-        return self.occupe
+    def get_control_max(self):
+        """ Retourne la valeur maximale de control """
+        return self.control_max
 
-    def set_occupe(self, valeur:bool):
-        """ Modifie l'attribut occupe """
-        self.occupe = valeur
+    def set_control_max(self, val: int):
+        """ Modifie la valeur maximale de control """
+        self.control_max = val
 
     @override
     def est_case(self):
         """ Retourne vrai si l'entite est une case """
         return True
+
+    def appliquer_control(self, control_unite: int, equipe_unite: int):
+        """ Applique le contrôle d'une unité sur cette case 
+
+        Args:
+            control_unite: Stat de control de l'unité
+            equipe_unite: Équipe de l'unité (1, 2, etc.)
+        """
+        if self.equipe == equipe_unite:
+            # Case déjà contrôlée par l'équipe : augmenter le control
+            self.control = min(self.control + control_unite, self.control_max)
+        else:
+            # Case adverse ou neutre : tenter la capture
+            if control_unite > self.control:
+                # Capture réussie
+                self.control = control_unite - self.control
+                self.equipe = equipe_unite
+            else:
+                # Réduction du contrôle adverse
+                self.control = self.control - control_unite

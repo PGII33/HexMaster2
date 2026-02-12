@@ -2,13 +2,15 @@
 from src.phase import PhaseTour
 from src.effet import Effet
 
+
 class Competence:
     """ Base de tous les effets du jeu """
-    def __init__(self, duree:int, phase:PhaseTour, effet:Effet):
+
+    def __init__(self, duree: int, phase: PhaseTour, nom_effet: str):
         """ Initialise l'effet """
         self.duree = duree
         self.phase = phase
-        self.effet = effet
+        self.nom_effet = nom_effet
 
     def get_duree(self):
         """ Retourne la duree de l'effet """
@@ -18,10 +20,21 @@ class Competence:
         """ Retourne la phase de l'effet """
         return self.phase
 
-    def get_effet(self):
-        """ Retourne l'effet """
-        return self.effet
+    def appliquer_effet(self, origine, toutes_entitees, cible=None, joueurs=None):
+        """ Applique l'effet 
 
-    def appliquer_effet(self, origine, toutes_entitees):
-        """ Applique l'effet """
-        self.effet(origine, toutes_entitees)
+        Args:
+            origine: L'entité qui possède la compétence
+            toutes_entitees: Liste de toutes les entités du terrain
+            cible: Cible de l'effet (optionnel)
+            joueurs: Dictionnaire {numero_equipe: objet_joueur} (optionnel)
+        """
+        if hasattr(Effet, self.nom_effet):
+            methode = getattr(Effet, self.nom_effet)
+
+            if joueurs is not None:
+                methode(origine, toutes_entitees, cible, joueurs)
+            elif cible is not None:
+                methode(origine, toutes_entitees, cible)
+            else:
+                methode(origine, toutes_entitees)

@@ -1,0 +1,20 @@
+{
+  "id": "carriere",
+  "nom": "Carriere",
+  "type": "case",
+  
+  "stats": {
+    "pv": 4,
+    "cout": 1,
+    "control_max": 5
+  },
+  
+  "competences": [
+    {
+      "nom": "instable",
+      "phase": "FIN_TOUR"
+    }
+  ],
+  
+  "description": "Attention, zone instable"
+}

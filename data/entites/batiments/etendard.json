@@ -1,0 +1,19 @@
+{
+  "id": "etendard",
+  "nom": "Etendard",
+  "type": "batiment",
+  "sprite": "assets/sprites/batiments/etendard.png",
+  "carte": "assets/cartes/batiments/etendard.png",
+  
+  "stats": {
+    "pv": 1,
+    "cout": 1,
+    "combat": 0,
+    "demolition": 0,
+    "degradation": 0,
+    "portee": 0,
+    "control": 5
+  },
+  
+  "description": "Un étendard vous représentant."
+}

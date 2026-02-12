@@ -1,0 +1,22 @@
+{
+  "id": "piques",
+  "nom": "Piques",
+  "type": "case",
+  "sprite": "assets/sprites/cases/piques.png",
+  "carte": "assets/cartes/cases/piques.png",
+  
+  "stats": {
+    "pv": 6,
+    "cout": 2,
+    "control_max": 3
+  },
+  
+  "competences": [
+    {
+      "nom": "piquant",
+      "phase": "FIN_TOUR"
+    }
+  ],
+  
+  "description": "Attention à vos pieds !"
+}

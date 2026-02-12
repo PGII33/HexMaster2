@@ -1,17 +1,21 @@
 """ Fichier de gestion des Batiments """
 from typing_extensions import override
-from src.entite import Entite
+from src.unite import Unite
 from src.competence import Competence
 
-class Batiment(Entite):
+
+class Batiment(Unite):
     """ Batiment du jeu """
-    def __init__(self, pv:int, nom:str, pos:tuple[int, int], cout:int,
-                 equipe:int, combat: int, demolition: int, degradation: int,
-                 portee:int, control:int, comp:list[Competence]=None):
+
+    def __init__(self, pv: int, nom: str, pos: tuple[int, int], cout: int,
+                 equipe: int, combat: int, demolition: int, degradation: int,
+                 portee: int, control: int, comp: list[Competence] = None, sprite_path: str = None,
+                 carte_path: str = None):
         """ Initialise le batiment """
         super().__init__(pv=pv, nom=nom, pos=pos, cout=cout, equipe=equipe,
                          combat=combat, demolition=demolition, degradation=degradation,
-                         portee=portee, control=control, comp=comp)
+                         portee=portee, control=control, comp=comp, sprite_path=sprite_path,
+                         carte_path=carte_path)
 
     @override
     def est_batiment(self):

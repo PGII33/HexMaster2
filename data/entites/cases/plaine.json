@@ -1,0 +1,13 @@
+{
+  "id": "plaine",
+  "nom": "Plaine",
+  "type": "case",
+  
+  "stats": {
+    "pv": 6,
+    "cout": 1,
+    "control_max": 6
+  },
+  
+  "description": "Case sans particularité"
+}

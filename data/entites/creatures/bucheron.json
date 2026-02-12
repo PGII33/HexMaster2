@@ -1,0 +1,27 @@
+{
+  "id": "bucheron",
+  "nom": "Bucheron",
+  "type": "creature",
+  "sprite": "assets/sprites/creatures/bucheron.png",
+  "carte": "assets/cartes/creatures/bucheron.png",
+  
+  "stats": {
+    "pv": 5,
+    "cout": 2,
+    "combat": 3,
+    "demolition": 1,
+    "degradation": 0,
+    "portee": 1,
+    "mouvement": 2,
+    "control": 1
+  },
+
+    "competences": [
+    {
+      "nom": "abattage",
+      "phase": "APRES_ATTAQUE"
+    }
+  ],
+  
+  "description": "Un bucheron robuste, il aimerait couper du bois ..."
+}

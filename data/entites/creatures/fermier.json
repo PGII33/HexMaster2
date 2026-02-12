@@ -1,0 +1,20 @@
+{
+  "id": "fermier",
+  "nom": "Fermier",
+  "type": "creature",
+  "sprite": "assets/sprites/creatures/fermier.png",
+  "carte": "assets/cartes/creatures/fermier.png",
+  
+  "stats": {
+    "pv": 5,
+    "cout": 1,
+    "combat": 2,
+    "demolition": 1,
+    "degradation": 0,
+    "portee": 1,  
+    "mouvement": 2,
+    "control": 1
+  },
+  
+  "description": "Unité de base, faible mais peu coûteuse"
+}
