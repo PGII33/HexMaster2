@@ -101,17 +101,8 @@ class Terrain:
         if hasattr(attaquant, 'comp') and attaquant.comp:
             self.avant_attaque(attaquant, cible)
 
-        # Déterminer les dégâts selon le type de cible
-        if cible.est_creature():
-            degats = attaquant.get_combat()
-        elif cible.est_batiment():
-            degats = attaquant.get_demolition()
-        else:  # Case
-            degats = attaquant.get_degradation()
-
-        # Appliquer les dégâts
-        nouveaux_pv = cible.get_pv() - degats
-        cible.set_pv(nouveaux_pv)
+        # Effectuer l'attaque
+        attaquant.attaquer(cible)
 
         # Appliquer les compétences après l'attaque
         if hasattr(attaquant, 'comp') and attaquant.comp:
