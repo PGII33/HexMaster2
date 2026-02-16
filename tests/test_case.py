@@ -43,5 +43,15 @@ class TestCase(unittest.TestCase):
             self.assertEqual(case.get_control_max(), ctrl_max)
 
     def test_appliquer_control(self):
-        """ Pas implémenté """ #TODO: Implémenter
-        self.skipTest("Pas implémenté")
+        case = Case(pv=0, nom="", pos=(0, 0), cout=0, equipe=1,
+                    control=0, control_max=10, comp=[])
+        case.appliquer_control(control_unite=5, equipe_unite=1)
+        self.assertEqual(case.control, 5)
+        case.appliquer_control(control_unite=3, equipe_unite=1)
+        self.assertEqual(case.control, 8)
+        case.appliquer_control(control_unite=4, equipe_unite=2)
+        self.assertEqual(case.control, 4)
+        self.assertEqual(case.equipe, 1)
+        case.appliquer_control(control_unite=5, equipe_unite=2)
+        self.assertEqual(case.control, 1)
+        self.assertEqual(case.equipe, 2)
