@@ -7,20 +7,28 @@ from src.const import TAILLE_MAIN_MAX
 class Joueur:
     """ Un joueur dans une partie """
 
-    def __init__(self, nom: str, deck: Deck, pi: int, numero: int):
+    def __init__(self, nom: str, deck: Deck, pi: int, equipe: int):
         self.nom = nom
         self.deck = deck
         self.pi = pi  # points d'invocation
-        self.numero = numero
+        self.equipe = equipe
         self.main = Main()
 
     def get_nom(self) -> str:
         """ Renvoie le nom du joueur """
         return self.nom
 
+    def set_nom(self, nom: str):
+        """ Change le nom du joueur """
+        self.nom = nom
+
     def get_deck(self) -> Deck:
         """ Renvoie le deck """
         return self.deck
+
+    def set_deck(self, deck: Deck):
+        """ Change le deck """
+        self.deck = deck
 
     def get_main(self) -> Main:
         """ Renvoie la main """
@@ -30,29 +38,13 @@ class Joueur:
         """ Renvoie les points d'invocation """
         return self.pi
 
-    def get_numero(self) -> int:
-        """ Renvoie l'identifiant du joueur (son numero) """
-        return self.numero
-
-    def get_equipe(self) -> int:
-        """ Renvoie l'équipe du joueur (correspond à son numéro) """
-        return self.numero
-
-    def set_nom(self, nom: str):
-        """ Change le nom du joueur """
-        self.nom = nom
-
-    def set_main(self, main: Main):
-        """ Change la main """
-        self.main = main
-
-    def set_deck(self, deck: Deck):
-        """ Change le deck """
-        self.deck = deck
-
     def set_pi(self, pi: int):
         """ Change les points d'invocation """
         self.pi = pi
+
+    def get_equipe(self) -> int:
+        """ Renvoie l'équipe du joueur """
+        return self.equipe
 
     def piocher_cartes(self):
         """ Pioche des cartes : 4 si main vide, sinon 1 par tour (jusqu'à maximum 4) """
