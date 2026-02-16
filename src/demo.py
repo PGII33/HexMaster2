@@ -53,8 +53,8 @@ deck_j2 = Deck(deck_j2_definitions, chargeur)
 deck_j1.melanger()
 deck_j2.melanger()
 
-j1 = Joueur(nom="Alice", deck=deck_j1, pi=PI_DEPART, numero=1)
-j2 = Joueur(nom="Bob", deck=deck_j2, pi=PI_DEPART, numero=2)
+j1 = Joueur(nom="Alice", deck=deck_j1, pi=PI_DEPART, equipe=1)
+j2 = Joueur(nom="Bob", deck=deck_j2, pi=PI_DEPART, equipe=2)
 
 # Piocher les cartes initiales pour chaque joueur
 for _ in range(TAILLE_MAIN_MAX):

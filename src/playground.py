@@ -70,10 +70,10 @@ for k in range(4):
     deck[k].melanger()
 
 
-j1 = Joueur(nom="Alice", deck=deck[0], pi=PI_DEPART, numero=1)
-j2 = Joueur(nom="Bob", deck=deck[1], pi=PI_DEPART, numero=2)
-j3 = Joueur(nom="Charles", deck=deck[2], pi=PI_DEPART, numero=3)
-j4 = Joueur(nom="Debby", deck=deck[3], pi=PI_DEPART, numero=4)
+j1 = Joueur(nom="Alice", deck=deck[0], pi=PI_DEPART, equipe=1)
+j2 = Joueur(nom="Bob", deck=deck[1], pi=PI_DEPART, equipe=2)
+j3 = Joueur(nom="Charles", deck=deck[2], pi=PI_DEPART, equipe=3)
+j4 = Joueur(nom="Debby", deck=deck[3], pi=PI_DEPART, equipe=4)
 
 # Piocher les cartes initiales pour chaque joueur
 for _ in range(TAILLE_MAIN_MAX):
