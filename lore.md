@@ -10,7 +10,7 @@ Combat rejouable, rareté de carte [peut-être, ne change que le cosmétique].
 1V1 Local.
 
 ## Majs
-A chaque maj majeure, une nouvelle faction arrive dans le monde, avec une portion de ses terres, et de ses créatures. Il se peut que des ajouts à des factions arrivent avec le temps.
+À chaque maj majeure, une nouvelle faction arrive dans le monde, avec une portion de ses terres, et de ses créatures. Il se peut que des ajouts à des factions arrivent avec le temps.
 
 # Factions
 
@@ -25,14 +25,14 @@ Pluie : Réduit les mouvements des créatures dans la zone d'effet (pour 1 tour)
 Les cartes liées aux terres du Moyen-âge.
 
 Fermier : Unité faible et peu coûteuse (faible contrôle).  
-Bucheron : Unité faible en vie, dégats moy sur créature. Comp, Abattage : si tappe une Forêt, le transforme en Plaine, gagne 2 PI. 
+Bucheron : Unité faible en vie, dégâts moy sur créature. Comp, Abattage : si tape une Forêt, le transforme en Plaine, gagne 2 PI. 
 Chevalier : Un chevalier en armure de maille, fort contre les créatures (grand contrôle).  
-Archer : Un archer reconnu, avec une armure de cuir. Il tire de loin mais n'apporte que peu de contrôle.  
+Archer : Un archer reconnu, avec une armure de cuir. Il tire de loin, mais n'apporte que peu de contrôle.  
 Bélier : Lent, inflige de lourds dégâts aux bâtiments (beaucoup de pv, 0 dégâts aux cases et créatures, pas de contrôle).  
 
 Plaine : Aucun effet (c'est joli).  
 Forêt : Rien ne peut être construit dessus (coûte 1)  
-Carrière : Les bâtiments au dessus prênent des dégats chaque tour (instabilité).  
+Carrière : Les bâtiments au-dessus prênent des dégats chaque tour (instabilité).  
 Piques : Inflige des dégâts en fin de tour.  
 
 Barrière de bois : Possède des points de vie (utile pour bloquer le passage), faible contrôle.  
