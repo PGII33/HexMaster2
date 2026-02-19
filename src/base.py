@@ -49,11 +49,11 @@ class Base:
         return self.carte_path
 
     def get_equipe(self):
-        """ Retourne l'equipe """
+        """ Retourne l'équipe """
         return self.equipe
 
     def set_equipe(self, equipe:int):
-        """ Modifie l'equipe """
+        """ Modifie l'équipe """
         self.equipe = equipe
 
     def get_comp(self):
@@ -76,17 +76,17 @@ class Base:
 # Getters particuliers
 
     def est_creature(self):
-        """ Retourne vrai si l'entite est une creature """
+        """ Retourne vrai si l'entité est une creature """
         return False
 
     def est_batiment(self):
-        """ Retourne vrai si l'entite est un batiment """
+        """ Retourne vrai si l'entité est un bâtiment """
         return False
 
     def est_sort(self):
-        """ Retourne vrai si l'entite est un sort """
+        """ Retourne vrai si l'entité est un sort """
         return False
 
     def est_case(self):
-        """ Retourne vrai si l'entite est une case """
+        """ Retourne vrai si l'entité est une case """
         return False
