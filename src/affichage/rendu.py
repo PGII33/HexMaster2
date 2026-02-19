@@ -207,6 +207,7 @@ class Rendu:
             bouton_h
         )
 
+    @staticmethod
     def dessiner_hexagone(self, screen, centre_pixel, taille, couleur, bordure_couleur=(0, 0, 0)):
         """ Dessine un hexagone flat-top """
         points = []
@@ -498,6 +499,7 @@ class Rendu:
         self.dessiner_main(screen, jeu.get_joueur_actif(), carte_selectionnee)
         self.dessiner_bouton_fin_tour(screen)
 
+    @staticmethod
     def dessiner_ecran_victoire(self, screen, joueur_gagnant):
         """ Affiche l'écran de victoire """
         # TODO: Changer l'affichage, c'est pourquoi je ne m'embête pas à mettre les couleurs dans const.py

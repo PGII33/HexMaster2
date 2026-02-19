@@ -48,7 +48,6 @@ class Creature(Unite):
         super().fin_tour()
         self.mouv = self.mouv_max
 
-    @override
     def debut_tour(self):
         """ Retire le mal d'invocation """
         self.mal_invocation = False  # Retire le mal d'invocation

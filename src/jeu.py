@@ -42,7 +42,7 @@ class Classique:
         """ Change le joueur actif """
         self.joueur_actif = joueur
 
-    def tour(self):
+    def tour(self)-> None | Joueur:
         """ Gère un tour de jeu """
         # Si il y a un gagnant, le retourne
         gagnant = self.partie_terminee()
@@ -55,6 +55,7 @@ class Classique:
             self.terrain.debut_tour(joueur.get_equipe())
             joueur.piocher_cartes()
             self.terrain.fin_tour(joueur.get_equipe())
+        return None
 
     def un_joueur_restant(self) -> bool | Joueur:
         """ Vérifie s'il ne reste qu'un seul joueur en vie """
