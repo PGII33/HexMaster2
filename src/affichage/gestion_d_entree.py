@@ -61,7 +61,7 @@ class GestionEntree:
         return actions
 
     @staticmethod
-    def ctrl_est_presse(self):
+    def ctrl_est_presse():
         """ Vérifie si Ctrl est actuellement pressé """
         mods = pygame.key.get_mods()
         return bool(mods & (pygame.KMOD_CTRL | pygame.KMOD_LCTRL | pygame.KMOD_RCTRL))

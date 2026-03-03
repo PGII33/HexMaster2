@@ -64,7 +64,7 @@ class EntiteChargeur:
             raise ValueError(f"Type d'entité inconnu: {definition['type']}")
 
     @staticmethod
-    def charger_competences(self, definition):
+    def charger_competences(definition):
         """ Charge les compétences depuis la définition JSON
 
         Args:
@@ -158,7 +158,7 @@ class EntiteChargeur:
         )
 
     @staticmethod
-    def creer_sort(self, definition, pos, equipe):
+    def creer_sort(definition, pos, equipe):
         """Crée une instance de sort"""
         stats = definition["stats"]
         sprite_path = definition.get("sprite")
