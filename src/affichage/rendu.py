@@ -208,7 +208,7 @@ class Rendu:
         )
 
     @staticmethod
-    def dessiner_hexagone(self, screen, centre_pixel, taille, couleur, bordure_couleur=(0, 0, 0)):
+    def dessiner_hexagone(screen, centre_pixel, taille, couleur, bordure_couleur=(0, 0, 0)):
         """ Dessine un hexagone flat-top """
         points = []
         for i in range(6):
@@ -434,7 +434,6 @@ class Rendu:
                 else:
                     couleur = CLR_EQ_DEF
 
-                self.dessiner_hexagone(screen, pos_ecran, taille_hex, couleur)
 
                 # Bordure épaisse pour les cases de déplacement
                 if entite.get_pos() in cases_deplacement:
@@ -500,7 +499,7 @@ class Rendu:
         self.dessiner_bouton_fin_tour(screen)
 
     @staticmethod
-    def dessiner_ecran_victoire(self, screen, joueur_gagnant):
+    def dessiner_ecran_victoire(screen, joueur_gagnant):
         """ Affiche l'écran de victoire """
         # TODO: Changer l'affichage, c'est pourquoi je ne m'embête pas à mettre les couleurs dans const.py
         # Overlay semi-transparent
