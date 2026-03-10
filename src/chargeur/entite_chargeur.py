@@ -145,6 +145,8 @@ class EntiteChargeur:
         stats = definition["stats"]
         sprite_path = definition.get("sprite")
         carte_path = definition.get("carte")
+        sprite_bg = definition.get("sprite_bg")
+        sprite_fg = definition.get("sprite_fg")
         return Case(
             nom=definition["nom"],
             pos=pos,
@@ -154,7 +156,9 @@ class EntiteChargeur:
             control_max=stats["control_max"],
             comp=self.charger_competences(definition),
             sprite_path=sprite_path,
-            carte_path=carte_path
+            carte_path=carte_path,
+            sprite_bg=sprite_bg,
+            sprite_fg=sprite_fg
         )
 
     @staticmethod

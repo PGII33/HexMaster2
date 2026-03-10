@@ -10,13 +10,24 @@ class Case(Entite):
     def __init__(self, pv: int, nom: str, pos: tuple[int, int],
                  cout: int, equipe: int, control_max: int, control:int=0,
                  comp: list[Competence] = None, sprite_path: str = None,
-                 carte_path: str = None):
+                 carte_path: str = None, sprite_bg: str = None,
+                 sprite_fg: str = None):
         """ Initialise la case """
         super().__init__(pv=pv, nom=nom, pos=pos, cout=cout, equipe=equipe,
                          control=control,
                          comp=comp, sprite_path=sprite_path,
                          carte_path=carte_path)
         self.control_max = control_max
+        self.sprite_bg = sprite_bg
+        self.sprite_fg = sprite_fg
+
+    def get_sprite_bg(self):
+        """ Retourne le chemin du sprite d'arrière-plan """
+        return self.sprite_bg
+
+    def get_sprite_fg(self):
+        """ Retourne le chemin du sprite de premier plan """
+        return self.sprite_fg
 
     def get_control_max(self):
         """ Retourne la valeur maximale de control """

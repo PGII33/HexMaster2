@@ -411,7 +411,7 @@ class Rendu:
         offset_x = self.zone_terrain.x + self.zone_terrain.width // 2
         offset_y = self.zone_terrain.y + self.zone_terrain.height // 2
 
-        # Dessiner les sprites des cases
+        # Dessiner les cases en couches : bg → overlays
         for entite in entites:
             if entite.est_case():
                 pos_monde = hex_vers_pixel(entite.get_pos(), taille_hex)
@@ -426,16 +426,27 @@ class Rendu:
                 if not zone_etendue.collidepoint(pos_ecran):
                     continue
 
-                sprite_path = entite.get_sprite_path()
-                if sprite_path:
-                    sprite = self.sprite_manager.get_sprite(sprite_path)
-                    if sprite:
-                        largeur_sprite = math.ceil(taille_hex * 2)
-                        hauteur_sprite = math.ceil(taille_hex * math.sqrt(3))
-                        sprite_redim = pygame.transform.scale(
-                            sprite, (largeur_sprite, hauteur_sprite))
-                        rect = sprite_redim.get_rect(center=pos_ecran)
-                        screen.blit(sprite_redim, rect)
+                largeur_sprite = math.ceil(taille_hex * 2)
+                hauteur_sprite = math.ceil(taille_hex * math.sqrt(3))
+
+                # 1) Background
+                sprite_bg = entite.get_sprite_bg()
+                if sprite_bg:
+                    bg = self.sprite_manager.get_sprite(sprite_bg)
+                    if bg:
+                        bg_redim = pygame.transform.scale(
+                            bg, (largeur_sprite, hauteur_sprite))
+                        screen.blit(bg_redim, bg_redim.get_rect(center=pos_ecran))
+
+                # Fallback : ancien sprite_path unique si bg non défini
+                if not sprite_bg:
+                    sprite_path = entite.get_sprite_path()
+                    if sprite_path:
+                        sprite = self.sprite_manager.get_sprite(sprite_path)
+                        if sprite:
+                            sprite_redim = pygame.transform.scale(
+                                sprite, (largeur_sprite, hauteur_sprite))
+                            screen.blit(sprite_redim, sprite_redim.get_rect(center=pos_ecran))
 
                 # Overlay par-dessus le sprite (un seul par case, par priorité)
                 if entite == entite_selectionnee:
@@ -462,6 +473,29 @@ class Rendu:
             if not entite.est_case():
                 self.dessiner_entite(
                     screen, camera, entite, offset_x, offset_y, entite_selectionnee, entites_a_portee)
+
+        # Dessiner les foregrounds des cases (dernière couche, par-dessus tout)
+        for entite in entites:
+            if entite.est_case():
+                sprite_fg = entite.get_sprite_fg()
+                if sprite_fg:
+                    taille_hex_fg = camera.get_taille_hex_actuelle()
+                    pos_monde = hex_vers_pixel(entite.get_pos(), taille_hex_fg)
+                    pos_ecran = (
+                        pos_monde[0] - camera.pos_x + offset_x,
+                        pos_monde[1] - camera.pos_y + offset_y
+                    )
+                    marge = taille_hex_fg * 2
+                    zone_etendue = self.zone_terrain.inflate(marge * 2, marge * 2)
+                    if not zone_etendue.collidepoint(pos_ecran):
+                        continue
+                    largeur_sprite = math.ceil(taille_hex_fg * 2)
+                    hauteur_sprite = math.ceil(taille_hex_fg * math.sqrt(3))
+                    fg = self.sprite_manager.get_sprite(sprite_fg)
+                    if fg:
+                        fg_redim = pygame.transform.scale(
+                            fg, (largeur_sprite, hauteur_sprite))
+                        screen.blit(fg_redim, fg_redim.get_rect(center=pos_ecran))
 
         self.dessiner_entete(screen, jeu)
         self.dessiner_info_entite(screen, entite_selectionnee)
