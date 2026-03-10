@@ -254,7 +254,10 @@ class Rendu:
             pos_monde[1] - camera.pos_y + offset_y
         )
 
-        if not self.zone_terrain.collidepoint(pos_ecran):
+        # Ne dessiner que si visible (avec marge pour éviter la disparition prématurée)
+        marge = taille_hex * 2
+        zone_etendue = self.zone_terrain.inflate(marge * 2, marge * 2)
+        if not zone_etendue.collidepoint(pos_ecran):
             return
 
         # Essayer d'afficher le sprite si disponible (avec couleur d'équipe)
