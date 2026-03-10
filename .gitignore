@@ -4,6 +4,7 @@ __pycache__/
 
 # virutal env
 .venv/
+venv/
 
 # coverage
 .coverage
