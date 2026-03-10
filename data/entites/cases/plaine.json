@@ -2,6 +2,7 @@
   "id": "plaine",
   "nom": "Plaine",
   "type": "case",
+  "sprite": "assets/sprites/cases/terrain.png",
   
   "stats": {
     "pv": 6,

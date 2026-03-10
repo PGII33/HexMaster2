@@ -2,6 +2,7 @@
   "id": "foret",
   "nom": "Foret",
   "type": "case",
+  "sprite": "assets/sprites/cases/foret.png",
   
   "stats": {
     "pv": 4,
