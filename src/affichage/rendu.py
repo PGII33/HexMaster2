@@ -2,6 +2,13 @@
 import math
 import pygame
 from src.affichage.hex_utilitaire import hex_vers_pixel
+from src.affichage.sprite_manager import (
+    OVERLAY_SELECTION,
+    OVERLAY_DEPLACEMENT,
+    OVERLAY_COMBAT,
+    OVERLAY_DEMOLITION,
+    OVERLAY_DEGRADATION,
+)
 from src.const import (
     CLR_FOND_TERRAIN,
     CLR_FOND_MAIN,
@@ -16,9 +23,6 @@ from src.const import (
     CLR_EQ_3,
     CLR_EQ_4,
     CLR_EQ_DEF,
-    CLR_ENTITE_SELECTIONNEE,
-    CLR_ATTAQUE,
-    CLR_DEPLACEMENT,
     TAILLE_POLICE
 )
 
@@ -41,6 +45,24 @@ class Rendu:
         # Couleurs et styles
         self.couleur_fond = CLR_FOND_TERRAIN
         self.sprite_manager = sprite_manager
+
+    @staticmethod
+    def _overlay_attaque_pour(entite):
+        """ Retourne le chemin d'overlay d'attaque selon le type d'entité """
+        if entite.est_creature():
+            return OVERLAY_COMBAT
+        if entite.est_batiment():
+            return OVERLAY_DEMOLITION
+        return OVERLAY_DEGRADATION
+
+    def _blitter_overlay(self, screen, chemin_overlay, pos_ecran, taille_hex):
+        """ Affiche un overlay (sélection, déplacement, attaque) centré sur pos_ecran """
+        largeur = math.ceil(taille_hex * 2)
+        hauteur = math.ceil(taille_hex * math.sqrt(3))
+        overlay = self.sprite_manager.get_overlay(chemin_overlay, largeur, hauteur)
+        if overlay:
+            rect = overlay.get_rect(center=pos_ecran)
+            screen.blit(overlay, rect)
 
     def dessiner_entete(self, screen, jeu):
         """ Dessine l'en-tête du jeu """
@@ -235,21 +257,6 @@ class Rendu:
         if not self.zone_terrain.collidepoint(pos_ecran):
             return
 
-        # Si cette entité est sélectionnée, dessiner un hexagone doré en dessous
-        if entite == entite_selectionnee:
-            # Hexagone de fond doré
-            self.dessiner_hexagone(
-                screen, pos_ecran, taille_hex, (255, 215, 0), (255, 215, 0))
-            # Bordure épaisse dorée
-            points = []
-            for j in range(6):
-                angle = math.pi / 3 * j
-                x = pos_ecran[0] + taille_hex * math.cos(angle)
-                y = pos_ecran[1] + taille_hex * math.sin(angle)
-                points.append((x, y))
-            pygame.draw.polygon(screen, (200, 140, 0),
-                                points, 4)  # Bordure épaisse
-
         # Essayer d'afficher le sprite si disponible (avec couleur d'équipe)
         sprite_path = entite.get_sprite_path()
         sprite = self.sprite_manager.get_sprite_pour_equipe(
@@ -308,16 +315,13 @@ class Rendu:
                 pygame.draw.polygon(screen, couleur, points)
                 pygame.draw.polygon(screen, (0, 0, 0), points, 2)  # Bordure
 
-        # Bordure pour les entités à portée (cibles attaquables)
-        if entite in entites_a_portee:
-            points = []
-            for j in range(6):
-                angle = math.pi / 3 * j
-                x = pos_ecran[0] + taille_hex * math.cos(angle)
-                y = pos_ecran[1] + taille_hex * math.sin(angle)
-                points.append((x, y))
-            pygame.draw.polygon(screen, CLR_ATTAQUE, points,
-                                4)
+        # Overlay par-dessus le sprite (un seul, par priorité)
+        if entite == entite_selectionnee:
+            self._blitter_overlay(screen, OVERLAY_SELECTION, pos_ecran, taille_hex)
+        elif entites_a_portee and entite in entites_a_portee:
+            # Pas d'overlay d'attaque sur la position de l'entité sélectionnée
+            if not entite_selectionnee or entite.get_pos() != entite_selectionnee.get_pos():
+                self._blitter_overlay(screen, self._overlay_attaque_pour(entite), pos_ecran, taille_hex)
 
     def dessiner_info_entite(self, screen, entite):
         """ Affiche les informations de l'entité sélectionnée """
@@ -404,94 +408,57 @@ class Rendu:
         offset_x = self.zone_terrain.x + self.zone_terrain.width // 2
         offset_y = self.zone_terrain.y + self.zone_terrain.height // 2
 
-        # Dessiner les hexagones de fond pour toutes les cases
+        # Dessiner les sprites des cases
         for entite in entites:
             if entite.est_case():
                 pos_monde = hex_vers_pixel(entite.get_pos(), taille_hex)
-
                 pos_ecran = (
                     pos_monde[0] - camera.pos_x + offset_x,
                     pos_monde[1] - camera.pos_y + offset_y
                 )
 
                 # Ne dessiner que si visible dans la zone terrain
-                marge = taille_hex * 2  # Marge de 2 hexagones pour éviter la disparition prématurée
+                marge = taille_hex * 2
                 zone_etendue = self.zone_terrain.inflate(marge * 2, marge * 2)
                 if not zone_etendue.collidepoint(pos_ecran):
                     continue
 
-                # Couleur de sélection si c'est cette entité qui est sélectionnée
-                if entite == entite_selectionnee:
-                    couleur = CLR_ENTITE_SELECTIONNEE  # Or pour sélection
-                elif entite.get_equipe() == 1:
-                    couleur = CLR_EQ_1
-                elif entite.get_equipe() == 2:
-                    couleur = CLR_EQ_2
-                elif entite.get_equipe() == 3:
-                    couleur = CLR_EQ_3
-                elif entite.get_equipe() == 4:
-                    couleur = CLR_EQ_4
-                else:
-                    couleur = CLR_EQ_DEF
-
-
-                # Bordure épaisse pour les cases de déplacement
-                if entite.get_pos() in cases_deplacement:
-                    points = []
-                    for i in range(6):
-                        angle = math.pi / 3 * i
-                        x = pos_ecran[0] + taille_hex * math.cos(angle)
-                        y = pos_ecran[1] + taille_hex * math.sin(angle)
-                        points.append((x, y))
-                    pygame.draw.polygon(screen, CLR_DEPLACEMENT, points, 4)
-
-                # Bordure rouge pour les cases à portée (cibles attaquables)
-                if entite in entites_a_portee:
-                    points = []
-                    for i in range(6):
-                        angle = math.pi / 3 * i
-                        x = pos_ecran[0] + taille_hex * math.cos(angle)
-                        y = pos_ecran[1] + taille_hex * math.sin(angle)
-                        points.append((x, y))
-                    # Bordure rouge épaisse
-                    pygame.draw.polygon(screen, CLR_ATTAQUE, points, 4)
-
-        # Dessiner les créatures, bâtiments et sorts
-        for entite in entites:
-            if not entite.est_case():
-                self.dessiner_entite(
-                    screen, camera, entite, offset_x, offset_y, entite_selectionnee, entites_a_portee)
-
-        # Dessiner les sprites des cases par-dessus les hexagones
-        for entite in entites:
-            if entite.est_case():
                 sprite_path = entite.get_sprite_path()
                 if sprite_path:
                     sprite = self.sprite_manager.get_sprite(sprite_path)
                     if sprite:
-                        pos_monde = hex_vers_pixel(
-                            entite.get_pos(), taille_hex)
-                        pos_ecran = (
-                            pos_monde[0] - camera.pos_x + offset_x,
-                            pos_monde[1] - camera.pos_y + offset_y
-                        )
-
-                        # Dessiner que si visible dans la zone terrain (avec marge)
-                        marge = taille_hex * 2
-                        zone_etendue = self.zone_terrain.inflate(
-                            marge * 2, marge * 2)
-                        if not zone_etendue.collidepoint(pos_ecran):
-                            continue
-
-                        # Redimensionner le sprite selon la taille de l'hexagone
-                        largeur_sprite = int(taille_hex * 1.8)
-                        hauteur_sprite = int(taille_hex * 1.8)
+                        largeur_sprite = math.ceil(taille_hex * 2)
+                        hauteur_sprite = math.ceil(taille_hex * math.sqrt(3))
                         sprite_redim = pygame.transform.scale(
                             sprite, (largeur_sprite, hauteur_sprite))
-
-                        # Centrer le sprite sur la position
                         rect = sprite_redim.get_rect(center=pos_ecran)
                         screen.blit(sprite_redim, rect)
+
+                # Overlay par-dessus le sprite (un seul par case, par priorité)
+                if entite == entite_selectionnee:
+                    self._blitter_overlay(screen, OVERLAY_SELECTION, pos_ecran, taille_hex)
+                elif entites_a_portee and entite in entites_a_portee:
+                    # Pas d'attaque sur la position de l'entité sélectionnée
+                    if entite_selectionnee and entite.get_pos() == entite_selectionnee.get_pos():
+                        pass
+                    else:
+                        # Ne pas afficher dégradation si une créature/bâtiment au même endroit est aussi ciblée
+                        entite_prioritaire = any(
+                            e for e in entites_a_portee
+                            if not e.est_case() and e.get_pos() == entite.get_pos()
+                        )
+                        if not entite_prioritaire:
+                            self._blitter_overlay(screen, self._overlay_attaque_pour(entite), pos_ecran, taille_hex)
+                elif not entites_a_portee and entite.get_pos() in cases_deplacement:
+                    # Pas de déplacement sur la case de l'entité sélectionnée
+                    if not entite_selectionnee or entite.get_pos() != entite_selectionnee.get_pos():
+                        self._blitter_overlay(screen, OVERLAY_DEPLACEMENT, pos_ecran, taille_hex)
+
+        # Dessiner les créatures, bâtiments et sorts par-dessus les cases
+        for entite in entites:
+            if not entite.est_case():
+                self.dessiner_entite(
+                    screen, camera, entite, offset_x, offset_y, entite_selectionnee, entites_a_portee)
 
         self.dessiner_entete(screen, jeu)
         self.dessiner_info_entite(screen, entite_selectionnee)

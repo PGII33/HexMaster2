@@ -3,6 +3,12 @@
 import os
 import pygame
 
+OVERLAY_SELECTION = os.path.join("assets", "sprites", "overlay", "selection.png")
+OVERLAY_DEPLACEMENT = os.path.join("assets", "sprites", "overlay", "deplacement.png")
+OVERLAY_COMBAT = os.path.join("assets", "sprites", "overlay", "combat.png")
+OVERLAY_DEMOLITION = os.path.join("assets", "sprites", "overlay", "demolition.png")
+OVERLAY_DEGRADATION = os.path.join("assets", "sprites", "overlay", "degradation.png")
+
 
 class SpriteManager:
     """ Gère la gestion des sprites """
@@ -10,6 +16,7 @@ class SpriteManager:
     def __init__(self):
         self.sprites = {}  # chemin -> pygame.Surface
         self.cartes = {}   # chemin -> pygame.Surface
+        self._overlay_cache = {} # Overlays redimensionnés en cache, clé: (chemin, largeur, hauteur)
         # Pour ne notifier qu'une fois par sprite manquant
         self.sprite_manquant_notifie = set()
         self.cartes_manquant_notifie = set()
@@ -49,6 +56,30 @@ class SpriteManager:
     def get_sprite_carte(self, chemin):
         """ Récupère le sprite de carte (charge si nécessaire)"""
         return self.charger_sprite(chemin)
+
+    def get_overlay(self, chemin, largeur, hauteur):
+        """ Récupère un overlay redimensionné (avec cache)
+
+        Args:
+            chemin: Chemin du fichier overlay PNG
+            largeur: Largeur souhaitée en pixels
+            hauteur: Hauteur souhaitée en pixels
+
+        Returns:
+            pygame.Surface redimensionnée avec alpha, ou None
+        """
+        cle = (chemin, largeur, hauteur)
+        if cle in self._overlay_cache:
+            return self._overlay_cache[cle]
+
+        sprite = self.charger_sprite(chemin)
+        if not sprite:
+            return None
+
+        sprite_redim = pygame.transform.scale(
+            sprite, (largeur, hauteur))
+        self._overlay_cache[cle] = sprite_redim
+        return sprite_redim
 
     def get_sprite_pour_equipe(self, sprite_path, equipe):
         """Récupère le sprite adapté à l'équipe
