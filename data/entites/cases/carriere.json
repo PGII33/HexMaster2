@@ -2,7 +2,7 @@
   "id": "carriere",
   "nom": "Carriere",
   "type": "case",
-  "sprite": "assets/sprites/cases/terrain.png",
+  "sprite_bg": "assets/sprites/cases/terrain.png",
   
   "stats": {
     "pv": 4,

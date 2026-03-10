@@ -2,7 +2,7 @@
   "id": "terrain",
   "nom": "Terrain",
   "type": "case",
-  "sprite": "assets/sprites/cases/terrain.png",
+  "sprite_bg": "assets/sprites/cases/terrain.png",
   "carte": "assets/cartes/cases/terrain.png",
   
   "stats": {
