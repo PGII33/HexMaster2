@@ -1,7 +1,11 @@
 """ Fichier de gestion des effets """
 
 from src.const import DGTS_PIQUANT, DGTS_INSTABLE, ABATTAGE_PI, CONFORT_PI
+from src.auxliaire import adjacents_hex
+from src.tag import TagActif
 #pylint: disable=unused-argument
+
+MOUILLE_DUREE = 3
 
 def damage(cible, montant):
     """ Inflige des dégâts à une cible
@@ -28,6 +32,15 @@ def ajouter_pi(joueurs, joueur, montant):
 
 class Effet:
     """ Les effets - Méthodes statiques uniquement """
+
+    @staticmethod
+    def creer_tag_mouille():
+        """ Crée une instance du tag Mouille """
+        return TagActif(
+            nom="Mouille",
+            duree=MOUILLE_DUREE,
+            modificateurs={"mouv_max": -1}
+        )
 
     @staticmethod
     def piquant(origine, toutes_entitees, cible=None, joueurs=None):
@@ -128,3 +141,16 @@ class Effet:
                 elif cible.est_case():
                     total_dgts += entite.get_degradation()
         damage(cible, total_dgts)
+
+    @staticmethod
+    def pluie(origine, toutes_entitees, cible, joueurs=None):
+        """ Applique le tag Mouille sur la case ciblée et les hexagones adjacents """
+        if cible is None:
+            return
+
+        positions_affectees = set(adjacents_hex(cible.get_pos()))
+        positions_affectees.add(cible.get_pos())
+
+        for entite in toutes_entitees:
+            if entite.est_creature() and entite.get_pos() in positions_affectees:
+                entite.ajouter_tag(Effet.creer_tag_mouille())

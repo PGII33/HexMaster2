@@ -18,6 +18,7 @@ class Creature(Unite):
                          control=control, portee=portee, comp=comp, sprite_path=sprite_path,
                          carte_path=carte_path)
         self.mouv = mouv  # Points de mouvements
+        self.mouv_base_max = mouv  # Mouvement maximum sans tags
         self.mouv_max = mouv  # Points de mouvements maximum
         self.mal_invocation = False  # True si vient d'être invoqué
 
@@ -28,6 +29,10 @@ class Creature(Unite):
     def set_mouv(self, mouv: int):
         """ Modifie les points de mouvement de l'unite """
         self.mouv = mouv
+
+    def get_mouv_max(self):
+        """ Retourne les points de mouvement maximum effectifs """
+        return self.mouv_max
 
     def get_mal_invocation(self):
         """ Retourne la valeur de l'attribut mal_invocation """
@@ -51,3 +56,13 @@ class Creature(Unite):
     def debut_tour(self):
         """ Retire le mal d'invocation """
         self.mal_invocation = False  # Retire le mal d'invocation
+
+    @override
+    def recalculer_stats_depuis_tags(self):
+        """ Recalcule les statistiques dérivées depuis les tags actifs """
+        ancien_mouv_max = self.mouv_max
+        self.mouv_max = max(0, self.mouv_base_max + self.get_modificateur_tag("mouv_max"))
+        if self.mouv > self.mouv_max:
+            self.mouv = self.mouv_max
+        elif self.mouv == ancien_mouv_max and self.mouv_max > ancien_mouv_max:
+            self.mouv = self.mouv_max

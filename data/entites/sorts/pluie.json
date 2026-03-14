@@ -1,0 +1,18 @@
+{
+  "id": "pluie",
+  "nom": "Pluie",
+  "type": "sort",
+
+  "stats": {
+    "cout": 1
+  },
+
+  "competences": [
+    {
+      "nom": "pluie",
+      "phase": "ACTIF"
+    }
+  ],
+
+  "description": "Mouille les creatures sur la case ciblee et les 6 cases adjacentes pendant 3 tours."
+}

@@ -45,7 +45,7 @@ deck_j2_definitions = [("fermier", 2)] * NOMBRE_FERMIERS_DECK + \
                       [("chevalier", 2)] * NOMBRE_CHEVALIER_DECK + \
                       [("archere", 2)] * NOMBRE_ARCHERE_DECK + \
                       [("piques", 2)] * NOMBRE_PIQUES_DECK + \
-                      [("palissade", 2)] * NOMBRE_BARRIERES_DECK
+                      [("pluie", 2)] * NOMBRE_BARRIERES_DECK
 
 deck_j1 = Deck(deck_j1_definitions, chargeur)
 deck_j2 = Deck(deck_j2_definitions, chargeur)
