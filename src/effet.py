@@ -1,11 +1,9 @@
 """ Fichier de gestion des effets """
 
-from src.const import DGTS_PIQUANT, DGTS_INSTABLE, ABATTAGE_PI, CONFORT_PI
+from src.const import DGTS_PIQUANT, DGTS_INSTABLE, ABATTAGE_PI, CONFORT_PI, MOUILLE_DUREE
 from src.auxliaire import adjacents_hex
 from src.tag import TagActif
 #pylint: disable=unused-argument
-
-MOUILLE_DUREE = 3
 
 def damage(cible, montant):
     """ Inflige des dégâts à une cible
