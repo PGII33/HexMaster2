@@ -4,7 +4,7 @@
 
 import unittest
 from random import randint, choice
-from src.competence import Competence
+from src.competences import Competence
 from src.phase import PhaseTour
 from tests.utils import MIN_INT, MAX_INT, BOUCLE_TEST, TAILLE_STR, generate_random_string
 

@@ -1,7 +1,7 @@
 """ Fichier de gestion des Bâtiments """
 from typing_extensions import override
 from src.unite import Unite
-from src.competence import Competence
+from src.competences import Competence
 
 
 class Batiment(Unite):

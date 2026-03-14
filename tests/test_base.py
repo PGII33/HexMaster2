@@ -5,9 +5,9 @@
 from random import randint, choice
 import unittest
 from src.base import Base
-from src.competence import Competence
+from src.competences import Competence
 from src.phase import PhaseTour
-from src.tag import TagActif
+from src.tags import TagActif
 from tests.utils import generate_random_string, MIN_INT, MAX_INT, BOUCLE_TEST, TAILLE_STR
 
 

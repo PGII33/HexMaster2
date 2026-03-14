@@ -1,6 +1,6 @@
 """ Fichier de gestion de base """
 
-from src.competence import Competence
+from src.competences import Competence
 
 class Base:
     """ Classe de base """
@@ -110,7 +110,7 @@ class Base:
 
     def resoudre_tags(self, phase, toutes_entitees, joueurs=None):
         """ Déclenche les effets des tags correspondant à une phase """
-        from src.effet import Effet  # pylint: disable=import-outside-toplevel
+        from src.effets import Effet  # pylint: disable=import-outside-toplevel
 
         for tag in list(self.tags_actifs):
             if tag.get_phase() != phase:

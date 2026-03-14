@@ -5,7 +5,7 @@
 from random import randint
 import unittest
 from src.creature import Creature
-from src.effet import Effet
+from src.effets import Effet
 from tests.utils import generate_random_string, MIN_INT, MAX_INT, BOUCLE_TEST, TAILLE_STR
 
 class TestCreature(unittest.TestCase):

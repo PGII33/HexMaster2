@@ -9,7 +9,7 @@ from tests.utils import MIN_INT, MAX_INT, BOUCLE_TEST
 from src.case import Case
 from src.creature import Creature
 from src.batiment import Batiment
-from src.effet import Effet
+from src.effets import Effet
 from src.sort import Sort
 from src.terrain import Terrain
 

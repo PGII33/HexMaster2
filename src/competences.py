@@ -1,6 +1,6 @@
 """ Fichier de gestion des effets """
 from src.phase import PhaseTour
-from src.effet import Effet
+from src.effets import Effet
 
 
 class Competence:
@@ -21,7 +21,7 @@ class Competence:
         return self.phase
 
     def appliquer_effet(self, origine, toutes_entitees, cible=None, joueurs=None):
-        """ Applique l'effet 
+        """ Applique l'effet
 
         Args:
             origine: L'entité qui possède la compétence

@@ -5,7 +5,7 @@ from src.creature import Creature
 from src.batiment import Batiment
 from src.case import Case
 from src.sort import Sort
-from src.competence import Competence
+from src.competences import Competence
 from src.phase import PhaseTour
 
 

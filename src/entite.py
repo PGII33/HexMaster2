@@ -1,6 +1,6 @@
 """ Fichier de gestion de Entite """
 
-from src.competence import Competence
+from src.competences import Competence
 from src.base import Base
 
 class Entite(Base):

@@ -42,7 +42,7 @@ class Effet:
 
     @staticmethod
     def piquant(origine, toutes_entitees, cible=None, joueurs=None):
-        """ Effet piquant : inflige des dégâts aux créatures sur la même case 
+        """ Effet piquant : inflige des dégâts aux créatures sur la même case
 
         Args:
             origine: L'entité (case) qui a la compétence piquant
@@ -57,8 +57,8 @@ class Effet:
 
     @staticmethod
     def abattage(origine, toutes_entitees, cible, joueurs=None):
-        """ Effet abattage : si la cible est une case forêt, la transforme en case plaine, l'utilisateur gagne des PI 
-        
+        """ Effet abattage : si la cible est une case forêt, la transforme en case plaine, l'utilisateur gagne des PI
+
         Args:
             origine: L'entité qui possède la compétence
             toutes_entitees: Liste de toutes les entités du terrain
@@ -90,7 +90,7 @@ class Effet:
         """ Effet confort : à la fin du tour, le joueur gagne des PI
 
         Args:
-            origine: L'entité qui possède la compétence 
+            origine: L'entité qui possède la compétence
             toutes_entitees: Liste de toutes les entités du terrain
             cible: Non utilisé pour cette compétence
             joueurs: Dictionnaire {numero_equipe: objet_joueur} pour donner les PI
@@ -102,7 +102,7 @@ class Effet:
         """ Effet instable : à la fin du tour, les bâtiments sur la même case perdent des PV
 
         Args:
-            origine: L'entité qui possède la compétence 
+            origine: L'entité qui possède la compétence
             toutes_entitees: Liste de toutes les entités du terrain
             cible: Non utilisé pour cette compétence
             joueurs: Dictionnaire {numero_equipe: objet_joueur} pour retirer les PI
@@ -116,7 +116,7 @@ class Effet:
         """ Effet pluie de flèches : inflige les dégats de toutes les archères alliées à une cible
 
         Args:
-            origine: L'entité qui possède la compétence 
+            origine: L'entité qui possède la compétence
             toutes_entitees: Liste de toutes les entités du terrain
             cible: L'entité ciblée par l'attaque
             joueurs: Dictionnaire {numero_equipe: objet_joueur} pour retirer les PI

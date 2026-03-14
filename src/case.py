@@ -1,7 +1,7 @@
 """ Fichier de gestion des Cases """
 from typing_extensions import override
 from src.entite import Entite
-from src.competence import Competence
+from src.competences import Competence
 
 
 class Case(Entite):

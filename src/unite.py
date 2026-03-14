@@ -1,6 +1,6 @@
 """ Fichier de gestion des Unite """
 
-from src.competence import Competence
+from src.competences import Competence
 from src.entite import Entite
 from src.auxiliaire import est_a_portee_hex
 
