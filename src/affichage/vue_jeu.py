@@ -7,7 +7,7 @@ from src.affichage.rendu import Rendu
 from src.affichage.gestion_d_entree import GestionEntree
 from src.affichage.sprite_manager import SpriteManager
 from src.affichage.hex_utilitaire import pixel_vers_hex
-from src.auxliaire import get_cases_deplacement, get_entites_a_portee, distance_hex, adjacents_hex
+from src.auxiliaire import get_cases_deplacement, get_entites_a_portee, distance_hex, adjacents_hex
 from src.const import PI_TOUR
 
 

@@ -1,7 +1,7 @@
 """ Fichier de gestion des effets """
 
 from src.const import DGTS_PIQUANT, DGTS_INSTABLE, ABATTAGE_PI, CONFORT_PI, MOUILLE_DUREE
-from src.auxliaire import adjacents_hex
+from src.auxiliaire import adjacents_hex
 from src.tag import TagActif
 #pylint: disable=unused-argument
 

@@ -5,7 +5,7 @@
 import unittest
 from random import randint
 from tests.utils import BOUCLE_TEST, MAX_INT, MIN_INT
-import src.auxliaire as aux
+import src.auxiliaire as aux
 from src.case import Case
 from src.creature import Creature
 from src.batiment import Batiment

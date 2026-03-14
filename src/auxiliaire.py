@@ -42,7 +42,7 @@ def adjacents_hex(pos: tuple[int, int]) -> list[tuple[int, int]]:
 
 
 def get_cases_deplacement(creature, terrain) -> list:
-    """ Retourne les cases où la créature peut se déplacer 
+    """ Retourne les cases où la créature peut se déplacer
 
     Args:
         creature: Instance de Creature

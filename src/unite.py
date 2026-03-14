@@ -2,7 +2,7 @@
 
 from src.competence import Competence
 from src.entite import Entite
-from src.auxliaire import est_a_portee_hex
+from src.auxiliaire import est_a_portee_hex
 
 class Unite(Entite):
     """ Base de toutes les unites du jeu """
