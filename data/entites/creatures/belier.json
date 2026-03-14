@@ -1,0 +1,18 @@
+{
+  "id": "belier",
+  "nom": "Belier",
+  "type": "creature",
+  
+  "stats": {
+    "pv": 5,
+    "cout": 2,
+    "combat": 1,
+    "demolition": 3,
+    "degradation": 1,
+    "portee": 1,  
+    "mouvement": 2,
+    "control": 3
+  },
+  
+  "description": "Y'avait un bâtiment, y'en a plus !"
+}

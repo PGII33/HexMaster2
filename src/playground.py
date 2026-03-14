@@ -37,14 +37,15 @@ c_case = c_neutre + c_foret + c_piques + c_plaine + c_carriere
 # Créature
 c_chevalier = [chargeur.creer_instance("chevalier", (1, 0), 1)]
 c_fermier = [chargeur.creer_instance("fermier", (1, -1), 1)]
-c_bucheron = [chargeur.creer_instance("bucheron", (1, -2), 0)]
+c_bucheron = [chargeur.creer_instance("bucheron", (1, -2), 1)]
 c_archere = [chargeur.creer_instance("archere", (1, 1), 4)]
+c_belier = [chargeur.creer_instance("belier", (1, 2), 4)]
 
-c_creature = c_chevalier + c_fermier + c_bucheron + c_archere
+c_creature = c_chevalier + c_fermier + c_bucheron + c_archere + c_belier
 
 # Batiment
-c_palissade = [chargeur.creer_instance("palissade", (-1, 0), 0)]
-c_feu_de_camp = [chargeur.creer_instance("feu de camp", (-1, 1), 0)]
+c_palissade = [chargeur.creer_instance("palissade", (-1, 0), 2)]
+c_feu_de_camp = [chargeur.creer_instance("feu de camp", (-1, 1), 2)]
 c_etendard = [chargeur.creer_instance("etendard", (-1, -1), 3)]
 
 c_batiment = c_palissade + c_feu_de_camp + c_etendard
