@@ -5,6 +5,7 @@
 from random import randint
 import unittest
 from src.creature import Creature
+from src.effet import Effet
 from tests.utils import generate_random_string, MIN_INT, MAX_INT, BOUCLE_TEST, TAILLE_STR
 
 class TestCreature(unittest.TestCase):
@@ -42,6 +43,14 @@ class TestCreature(unittest.TestCase):
                                 control=0, mouv=initial_mouv)
             creature.set_mouv(new_mouv)
             self.assertEqual(creature.get_mouv(), new_mouv)
+
+    def test_get_mouv_max(self):
+        for _ in range(BOUCLE_TEST):
+            mouv = randint(MIN_INT, MAX_INT)
+            creature = Creature(pv=0, nom="", cout=0, pos=(0, 0), equipe=0,
+                                combat=0, demolition=0, degradation=0, portee=0,
+                                control=0, mouv=mouv)
+            self.assertEqual(creature.get_mouv_max(), mouv)
 
     def test_get_mal_invocation(self):
         values = [True, False]
@@ -88,3 +97,24 @@ class TestCreature(unittest.TestCase):
                                 control=0, mouv=randint(MIN_INT, MAX_INT))
             creature.fin_tour()
             self.assertFalse(creature.get_mal_invocation())
+
+    def test_mouille_reduit_mouvement_max(self):
+        creature = Creature(pv=5, nom="", cout=0, pos=(0, 0), equipe=0,
+                            combat=0, demolition=0, degradation=0, portee=0,
+                            control=0, mouv=2)
+
+        creature.ajouter_tag(Effet.creer_tag_mouille())
+
+        self.assertEqual(creature.get_mouv_max(), 1)
+        self.assertEqual(creature.get_mouv(), 1)
+
+    def test_retirer_mouille_restaure_mouvement_max(self):
+        creature = Creature(pv=5, nom="", cout=0, pos=(0, 0), equipe=0,
+                            combat=0, demolition=0, degradation=0, portee=0,
+                            control=0, mouv=2)
+
+        creature.ajouter_tag(Effet.creer_tag_mouille())
+        creature.retirer_tag("Mouille")
+
+        self.assertEqual(creature.get_mouv_max(), 2)
+        self.assertEqual(creature.get_mouv(), 2)
