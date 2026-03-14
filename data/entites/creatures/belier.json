@@ -2,6 +2,8 @@
   "id": "belier",
   "nom": "Belier",
   "type": "creature",
+  "sprite": "assets/sprites/creatures/belier.png",
+  "carte": "assets/cartes/creatures/belier.png",
   
   "stats": {
     "pv": 5,

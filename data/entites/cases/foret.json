@@ -3,6 +3,7 @@
   "nom": "Foret",
   "type": "case",
   "sprite_bg": "assets/sprites/cases/foret.png",
+  "carte": "assets/cartes/cases/foret.png",
   
   "stats": {
     "pv": 4,
