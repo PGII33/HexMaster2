@@ -65,7 +65,7 @@ terrain_playground = Terrain(terrain)
 
 deck = []
 for k in range(4):
-    deck.append([("terrain", k + 1)] * EXEMPLAIRE)
+    deck.append([("terrain", k + 1)] * EXEMPLAIRE + [("pluie de fleches", k + 1)] * EXEMPLAIRE)
     deck[k] = Deck(deck[k], chargeur)
     deck[k].melanger()
 

@@ -1,0 +1,19 @@
+{
+  "id": "pluie de fleches",
+  "nom": "Pluie de fleches",
+  "type": "sort",
+  "carte": "assets/cartes/sorts/pluie de fleches.png",
+
+  "stats": {
+    "cout": 2
+  },
+
+  "competences": [
+    {
+      "nom": "pluie_de_fleches",
+      "phase": "ACTIF"
+    }
+  ],
+
+  "description": "Declenche une pluie de fleches sur la case ciblee."
+}

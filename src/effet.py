@@ -99,3 +99,32 @@ class Effet:
         for entite in toutes_entitees:
             if entite.get_pos() == origine.get_pos() and entite.est_batiment():
                 damage(entite, DGTS_INSTABLE)
+
+    @staticmethod
+    def pluie_de_fleches(origine, toutes_entitees, cible, joueurs=None):
+        """ Effet pluie de flèches : inflige les dégats de toutes les archères alliées à une cible
+
+        Args:
+            origine: L'entité qui possède la compétence 
+            toutes_entitees: Liste de toutes les entités du terrain
+            cible: L'entité ciblée par l'attaque
+            joueurs: Dictionnaire {numero_equipe: objet_joueur} pour retirer les PI
+        """
+        if cible is None:
+            return
+
+        equipe_origine = origine.get_equipe()
+        total_dgts = 0
+        for entite in toutes_entitees:
+            if (
+                entite.est_creature()
+                and entite.get_equipe() == equipe_origine
+                and entite.get_nom().lower() in ["archere", "archer"]
+            ):
+                if cible.est_creature():
+                    total_dgts += entite.get_combat()
+                elif cible.est_batiment():
+                    total_dgts += entite.get_demolition()
+                elif cible.est_case():
+                    total_dgts += entite.get_degradation()
+        damage(cible, total_dgts)
