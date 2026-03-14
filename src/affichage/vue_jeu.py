@@ -182,6 +182,7 @@ class VueJeu:
 
         joueur_actif = self.jeu.get_joueur_actif()
         equipe_joueur = joueur_actif.get_equipe()
+        cible_sort = None
 
         # Vérifier que le joueur a assez de PI
         if joueur_actif.get_pi() < self.carte_selectionnee.get_cout():
@@ -221,21 +222,44 @@ class VueJeu:
             if not case_alliee_adjacente:
                 return
 
-        # Les sorts n'ont pas de restrictions de position
+        elif self.carte_selectionnee.est_sort():
+            # Les sorts ciblent d'abord une entité non-case sur l'hex cliqué,
+            # puis la case si aucune créature/bâtiment n'est présente.
+            for entite in self.jeu.get_entitees():
+                if entite.get_pos() == position and not entite.est_case():
+                    cible_sort = entite
+                    break
+
+            if cible_sort is None:
+                cible_sort = self.jeu.get_terrain().get_case_at(position)
+
+            if not cible_sort:
+                return
 
         # Dépenser les PI
         joueur_actif.set_pi(joueur_actif.get_pi() -
                             self.carte_selectionnee.get_cout())
 
-        # Positionner la carte
-        self.carte_selectionnee.set_pos(position)
+        if self.carte_selectionnee.est_sort():
+            # Les sorts sont consommés immédiatement et ne restent pas sur le terrain.
+            for comp in self.carte_selectionnee.get_comp():
+                comp.appliquer_effet(
+                    self.carte_selectionnee,
+                    self.jeu.get_terrain().get_entites(),
+                    cible_sort,
+                    self.jeu.get_terrain().joueurs
+                )
+            self.jeu.get_terrain().nettoyer_entites_mortes()
+        else:
+            # Positionner la carte
+            self.carte_selectionnee.set_pos(position)
 
-        # Activer le mal d'invocation pour les créatures
-        if self.carte_selectionnee.est_creature():
-            self.carte_selectionnee.set_mal_invocation(True)
+            # Activer le mal d'invocation pour les créatures
+            if self.carte_selectionnee.est_creature():
+                self.carte_selectionnee.set_mal_invocation(True)
 
-        # Ajouter au terrain
-        self.jeu.get_terrain().get_entites().append(self.carte_selectionnee)
+            # Ajouter au terrain
+            self.jeu.get_terrain().get_entites().append(self.carte_selectionnee)
 
         # Retirer de la main
         joueur_actif.get_main().retirer_carte(self.carte_selectionnee)

@@ -161,8 +161,7 @@ class EntiteChargeur:
             sprite_fg=sprite_fg
         )
 
-    @staticmethod
-    def creer_sort(definition, pos, equipe):
+    def creer_sort(self, definition, pos, equipe):
         """Crée une instance de sort"""
         stats = definition["stats"]
         sprite_path = definition.get("sprite")
