@@ -2,6 +2,7 @@
   "id": "pluie",
   "nom": "Pluie",
   "type": "sort",
+  "carte": "assets/cartes/sorts/pluie.png",
 
   "stats": {
     "cout": 1
