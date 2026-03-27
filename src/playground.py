@@ -39,7 +39,7 @@ c_chevalier = [chargeur.creer_instance("chevalier", (1, 0), 1)]
 c_fermier = [chargeur.creer_instance("fermier", (1, -1), 1)]
 c_bucheron = [chargeur.creer_instance("bucheron", (1, -2), 1)]
 c_archere = [chargeur.creer_instance("archere", (1, 1), 4)]
-c_belier = [chargeur.creer_instance("belier", (1, 2), 4)]
+c_belier = [chargeur.creer_instance("belier", (1, 2), 3)]
 
 c_creature = c_chevalier + c_fermier + c_bucheron + c_archere + c_belier
 
@@ -65,11 +65,17 @@ terrain = cj + c_case + c_creature + c_batiment
 terrain_playground = Terrain(terrain)
 
 deck = []
-for k in range(4):
-    deck.append([("terrain", k + 1)] * EXEMPLAIRE + [("pluie de fleches", k + 1)] * EXEMPLAIRE)
-    deck[k] = Deck(deck[k], chargeur)
-    deck[k].melanger()
 
+deck.append(Deck([("palissade", 2)] * EXEMPLAIRE + [("feu de camp", 2)] * EXEMPLAIRE + [("etendard", 3)] * EXEMPLAIRE, chargeur))
+
+deck.append(Deck([("chevalier", 1)] * EXEMPLAIRE + [("fermier", 1)] * EXEMPLAIRE + [("bucheron", 1)] * EXEMPLAIRE + [("archere", 1)] * EXEMPLAIRE + [("belier", 1)] * EXEMPLAIRE, chargeur))
+deck[1].melanger()
+
+deck.append(Deck([("foret", 3)] * EXEMPLAIRE + [("carriere", 3)] * EXEMPLAIRE + [("piques", 3)] * EXEMPLAIRE + [("plaine", 3)] * EXEMPLAIRE + [("terrain", 3)] * EXEMPLAIRE, chargeur))
+deck[2].melanger()
+
+deck.append(Deck([("archere", 4)] * EXEMPLAIRE + [("pluie de fleches", 4)] * EXEMPLAIRE + [("pluie", 4)] * EXEMPLAIRE, chargeur))
+deck[3].melanger()
 
 j1 = Joueur(nom="Alice", deck=deck[0], pi=PI_DEPART, equipe=1)
 j2 = Joueur(nom="Bob", deck=deck[1], pi=PI_DEPART, equipe=2)
