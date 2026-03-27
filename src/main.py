@@ -1,8 +1,8 @@
 """ Fichier principal du jeu """
 
 import sys
-from src.demo import demo
-from src.playground import playground
+from src.demo import creer_demo
+from src.playground import creer_playground
 from src.affichage.vue_jeu import VueJeu
 
 if __name__ == '__main__':
@@ -14,8 +14,10 @@ if __name__ == '__main__':
 
     mode = sys.argv[1]
     if mode == "demo":
+        demo = creer_demo()
         vue = VueJeu(demo)
         vue.lancer()
     elif mode == "playground":
+        playground = creer_playground()
         vue = VueJeu(playground)
         vue.lancer()
