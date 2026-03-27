@@ -9,7 +9,7 @@ if __name__ == '__main__':
     args = sys.argv
 
     if len(args) < 2:
-        print("Usage: python main.py [demo|playground]")
+        print("Usage: python3 -m src.main [demo|playground]")
         sys.exit(1)
 
     mode = sys.argv[1]
