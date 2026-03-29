@@ -99,7 +99,7 @@ class BoutonHex:
         self._scale += (self._target_scale - self._scale) * vitesse
         self._update_rect_from_scale()
     
-    def draw(self, surface: pygame.Surface)-> None:
+    def afficher(self, surface: pygame.Surface)-> None:
         """ Dessine le bouton """
         if self._pressed or self._click_timer_ms > 0:
             fill = self._couleur_pressed

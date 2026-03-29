@@ -36,7 +36,7 @@ class EcranAccueil(BaseEcran):
         surface.fill(c.GRIS_CLAIR)
 
         for bouton in self._boutons:
-            bouton.draw(surface)
+            bouton.afficher(surface)
 
     def update(self, dt):
         """ Mettre à jour l'état de l'écran d'accueil"""
