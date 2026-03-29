@@ -3,6 +3,11 @@ import pygame
 from .ecrans.base_ecran import BaseEcran
 from .ecrans.ecran_accueil import EcranAccueil
 from .ecrans.ecran_parametres import EcranParametres
+from .ecrans.ecran_jeu import EcranJeu
+
+from src.demo import creer_demo
+from src.playground import creer_playground
+
 
 class Application:
     """ Classe principale de l'application"""
@@ -19,6 +24,8 @@ class Application:
 
         self.creer_ecran("accueil", EcranAccueil(self._width, self._height))
         self.creer_ecran("parametres", EcranParametres(self._width, self._height))
+        self.creer_ecran("demo", EcranJeu(self._width, self._height, creer_demo()))
+        self.creer_ecran("playground", EcranJeu(self._width, self._height, creer_playground()))
         if ecran_initial not in self._ecrans:
             raise ValueError(f"Ecran initial '{ecran_initial}' non trouvé parmi les écrans disponibles")
         self._ecran_actuel: BaseEcran = self._ecrans[ecran_initial] 

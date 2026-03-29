@@ -1,7 +1,6 @@
 """ orchestre l'affichage du jeu """
 # pylint: disable=no-member
 
-import pygame
 from src.affichage.camera import Camera
 from src.affichage.rendu import Rendu
 from src.affichage.gestion_d_entree import GestionEntree
@@ -9,16 +8,12 @@ from src.affichage.sprite_manager import SpriteManager
 from src.affichage.hex_utilitaire import pixel_vers_hex
 from src.auxiliaire import get_cases_deplacement, get_entites_a_portee, distance_hex, adjacents_hex
 from src.const import PI_TOUR
-
+import pygame
 
 class VueJeu:
     """ Gère le jeu """
 
     def __init__(self, jeu, largeur=1280, hauteur=720):
-        pygame.init()
-        self.screen = pygame.display.set_mode(
-            (largeur, hauteur), pygame.RESIZABLE)
-        pygame.display.set_caption("HexMaster2")
 
         self.jeu = jeu
         self.camera = Camera(largeur, hauteur)
@@ -28,9 +23,7 @@ class VueJeu:
 
         self.rendu.calculer_zones(largeur, hauteur)
 
-        self.clock = pygame.time.Clock()
         self.running = True
-        self.fps = 60
 
         self.entite_selectionnee = None
         self.cases_deplacement = []
@@ -267,182 +260,186 @@ class VueJeu:
         # Réinitialiser la sélection
         self.carte_selectionnee = None
 
-    def lancer(self):
-        """ Lance la boucle principale du jeu """
-        while self.running:
-            # Calculer les entités à portée si Ctrl est pressé
-            if self.entite_selectionnee and (self.entite_selectionnee.est_creature() or self.entite_selectionnee.est_batiment()):
-                if self.gestion_entree.ctrl_est_presse():
-                    joueur_actif = self.jeu.get_joueur_actif()
-                    equipe_joueur = joueur_actif.get_equipe()
+    def _gerer_evenements_systeme(self, events):
+        """ Gérer les événements système """
+        for event in events:
+            if event.type == pygame.QUIT:
+                self.running = False
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                self.running = False
+            elif event.type == pygame.VIDEORESIZE:
+                new_size = event.size
+                largeur, hauteur = new_size
+                self.rendu.calculer_zones(largeur, hauteur)
+                self.camera.set_taille_ecran(largeur, hauteur)
 
-                    # Vérifier le mal d'invocation pour les créatures
-                    peut_attaquer = True
-                    if self.entite_selectionnee.est_creature() and self.entite_selectionnee.mal_invocation:
-                        peut_attaquer = False
+    def _appliquer_action(self, actions):
+        for action in actions:
+            if action["type"] == "selection":
+                force_case = action.get("shift", False)
+                force_attaque = action.get("ctrl", False)
 
-                    if self.entite_selectionnee.get_equipe() == equipe_joueur and not self.entite_selectionnee.get_a_attaque() and peut_attaquer:
-                        self.entites_a_portee = get_entites_a_portee(
-                            self.entite_selectionnee, self.jeu.get_terrain()
+            if action["type"] == "deselection":
+                # Clic droit : désélectionner tout
+                self.entite_selectionnee = None
+                self.carte_selectionnee = None
+                self.cases_deplacement = []
+                self.entites_a_portee = []
+
+            elif action["type"] == "selection":
+                # Vérifier si clic sur bouton fin de tour
+                if self.rendu.bouton_fin_tour and self.rendu.bouton_fin_tour.collidepoint(action["pos_pixel"]):
+                    # Changer de joueur
+                    joueurs = self.jeu.get_joueurs()
+                    index_actuel = joueurs.index(
+                        self.jeu.get_joueur_actif())
+                    prochain_index = (index_actuel + 1) % len(joueurs)
+
+                    # Fin de tour du joueur actuel
+                    joueur_actuel = self.jeu.get_joueur_actif()
+                    self.jeu.get_terrain().fin_tour(joueur_actuel.get_equipe())
+
+                    # Début de tour du prochain joueur
+                    self.jeu.set_joueur_actif(joueurs[prochain_index])
+                    joueur_suivant = joueurs[prochain_index]
+                    self.jeu.get_terrain().debut_tour(joueur_suivant.get_equipe())
+
+                    # Ajouter les PI au joueur
+                    joueur_suivant.set_pi(
+                        joueur_suivant.get_pi() + PI_TOUR)
+
+                    # Piocher 1 carte par tour (jusqu'à maximum 4)
+                    joueur_suivant.piocher_cartes()
+
+                    # Vérifier les conditions de victoire
+                    gagnant = self.jeu.partie_terminee()
+                    if gagnant:
+                        self.partie_terminee = True
+                        self.joueur_gagnant = gagnant
+
+                    self.entite_selectionnee = None
+                    self.carte_selectionnee = None
+                # Vérifier si clic sur une carte dans la main
+                elif self.rendu.zone_main.collidepoint(action["pos_pixel"]):
+                    carte_index = self.rendu.get_carte_cliquee(
+                        action["pos_pixel"], self.jeu.get_joueur_actif())
+                    if carte_index is not None:
+                        cartes = self.jeu.get_joueur_actif().get_main().get_cartes()
+                        self.carte_selectionnee = cartes[carte_index]
+                        self.entite_selectionnee = None  # Désélectionner l'entité
+
+                else:
+                    # Shift+clic pour forcer sélection de case
+                    force_case = action.get("shift", False)
+                    force_attaque = action.get("ctrl", False)
+
+                    # Si une carte est sélectionnée, tenter de l'invoquer
+                    if self.carte_selectionnee and self.rendu.zone_terrain.collidepoint(action["pos_pixel"]):
+                        # Convertir en coordonnées hex
+                        offset_x = self.rendu.zone_terrain.x + self.rendu.zone_terrain.width // 2
+                        offset_y = self.rendu.zone_terrain.y + self.rendu.zone_terrain.height // 2
+                        pos_monde = (
+                            action["pos_pixel"][0] -
+                            offset_x + self.camera.pos_x,
+                            action["pos_pixel"][1] -
+                            offset_y + self.camera.pos_y
                         )
+                        taille_hex = self.camera.get_taille_hex_actuelle()
+                        coord_hex = pixel_vers_hex(pos_monde, taille_hex)
+
+                        # Invoquer la carte
+                        self.invoquer_carte(coord_hex)
+                    # Si une entité est sélectionnée, vérifier si clic sur case de déplacement ou entité à portée
+                    elif self.entite_selectionnee and not force_case:
+                        # Convertir la position clic en coordonnées hex
+                        offset_x = self.rendu.zone_terrain.x + self.rendu.zone_terrain.width // 2
+                        offset_y = self.rendu.zone_terrain.y + self.rendu.zone_terrain.height // 2
+                        pos_monde = (
+                            action["pos_pixel"][0] -
+                            offset_x + self.camera.pos_x,
+                            action["pos_pixel"][1] -
+                            offset_y + self.camera.pos_y
+                        )
+                        taille_hex = self.camera.get_taille_hex_actuelle()
+                        coord_hex = pixel_vers_hex(pos_monde, taille_hex)
+
+                        # Vérifier si clic sur une entité à portée (seulement si Ctrl pressé)
+                        entite_cliquee = None
+                        if force_attaque and self.entites_a_portee:
+                            for entite in self.entites_a_portee:
+                                if entite.get_pos() == coord_hex:
+                                    # Priorité aux créatures/bâtiments, sinon cases
+                                    if not entite.est_case():
+                                        entite_cliquee = entite
+                                        break
+                                    elif not entite_cliquee:
+                                        entite_cliquee = entite
+
+                        if entite_cliquee:
+                            # Attaquer la cible
+                            self.attaquer_cible(entite_cliquee)
+                        # Si c'est une créature et clic sur case de déplacement
+                        elif self.entite_selectionnee.est_creature() and coord_hex in self.cases_deplacement:
+                            self.deplacer_creature(coord_hex)
+                        else:
+                            # Sinon, sélectionner une nouvelle entité
+                            self.traiter_selection(
+                                action["pos_pixel"], force_case)
                     else:
-                        self.entites_a_portee = []
+                        self.traiter_selection(
+                            action["pos_pixel"], force_case)
+
+    def _maj_entites_a_portee(self):
+        # Calculer les entités à portée si Ctrl est pressé
+        if self.entite_selectionnee and (self.entite_selectionnee.est_creature() or self.entite_selectionnee.est_batiment()):
+            if self.gestion_entree.ctrl_est_presse():
+                joueur_actif = self.jeu.get_joueur_actif()
+                equipe_joueur = joueur_actif.get_equipe()
+
+                # Vérifier le mal d'invocation pour les créatures
+                peut_attaquer = True
+                if self.entite_selectionnee.est_creature() and self.entite_selectionnee.mal_invocation:
+                    peut_attaquer = False
+
+                if self.entite_selectionnee.get_equipe() == equipe_joueur and not self.entite_selectionnee.get_a_attaque() and peut_attaquer:
+                    self.entites_a_portee = get_entites_a_portee(
+                        self.entite_selectionnee, self.jeu.get_terrain()
+                    )
                 else:
                     self.entites_a_portee = []
             else:
                 self.entites_a_portee = []
+        else:
+            self.entites_a_portee = []
 
-            # Evenements
-            events = pygame.event.get()
-            for event in events:
-                if event.type == pygame.QUIT:
-                    self.running = False
-                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                    self.running = False
-                elif event.type == pygame.VIDEORESIZE:
-                    new_size = event.size
-                    largeur, hauteur = new_size
-                    self.rendu.calculer_zones(largeur, hauteur)
-                    self.camera.set_taille_ecran(largeur, hauteur)
+    def _dessiner_scene(self, surface):            
+        # Rendu
+        surface.fill(self.rendu.couleur_fond)
+        self.rendu.dessiner_tout(
+            surface, self.camera,
+            self.jeu.get_entitees(),
+            self.jeu,
+            self.entite_selectionnee,
+            self.cases_deplacement,
+            self.entites_a_portee,
+            self.carte_selectionnee
+        )
 
-            # Entrees
-            actions = self.gestion_entree.traiter_evenements(
-                events, self.camera)
+    def _dessiner_overlays_fin_partie(self, surface):
+        self.rendu.dessiner_ecran_victoire(surface, self.joueur_gagnant)
 
-            # Appliquer les actions
-            for action in actions:
-                # Si la partie est terminée, ne rien faire sauf quitter
-                if self.partie_terminee:
-                    continue
+    def handle_events(self, events):
+        """ Gérer les événements (non utilisé actuellement) """
+        self._gerer_evenements_systeme(events)
+        actions = self.gestion_entree.traiter_evenements(events, self.camera)
+        self._appliquer_action(actions)
 
-                if action["type"] == "deselection":
-                    # Clic droit : désélectionner tout
-                    self.entite_selectionnee = None
-                    self.carte_selectionnee = None
-                    self.cases_deplacement = []
-                    self.entites_a_portee = []
+    def update(self, dt):
+        """ Mettre à jour l'état du jeu (non utilisé actuellement) """
+        self._maj_entites_a_portee()
 
-                elif action["type"] == "selection":
-                    # Vérifier si clic sur bouton fin de tour
-                    if self.rendu.bouton_fin_tour and self.rendu.bouton_fin_tour.collidepoint(action["pos_pixel"]):
-                        # Changer de joueur
-                        joueurs = self.jeu.get_joueurs()
-                        index_actuel = joueurs.index(
-                            self.jeu.get_joueur_actif())
-                        prochain_index = (index_actuel + 1) % len(joueurs)
-
-                        # Fin de tour du joueur actuel
-                        joueur_actuel = self.jeu.get_joueur_actif()
-                        self.jeu.get_terrain().fin_tour(joueur_actuel.get_equipe())
-
-                        # Début de tour du prochain joueur
-                        self.jeu.set_joueur_actif(joueurs[prochain_index])
-                        joueur_suivant = joueurs[prochain_index]
-                        self.jeu.get_terrain().debut_tour(joueur_suivant.get_equipe())
-
-                        # Ajouter les PI au joueur
-                        joueur_suivant.set_pi(
-                            joueur_suivant.get_pi() + PI_TOUR)
-
-                        # Piocher 1 carte par tour (jusqu'à maximum 4)
-                        joueur_suivant.piocher_cartes()
-
-                        # Vérifier les conditions de victoire
-                        gagnant = self.jeu.partie_terminee()
-                        if gagnant:
-                            self.partie_terminee = True
-                            self.joueur_gagnant = gagnant
-
-                        self.entite_selectionnee = None
-                        self.carte_selectionnee = None
-                    # Vérifier si clic sur une carte dans la main
-                    elif self.rendu.zone_main.collidepoint(action["pos_pixel"]):
-                        carte_index = self.rendu.get_carte_cliquee(
-                            action["pos_pixel"], self.jeu.get_joueur_actif())
-                        if carte_index is not None:
-                            cartes = self.jeu.get_joueur_actif().get_main().get_cartes()
-                            self.carte_selectionnee = cartes[carte_index]
-                            self.entite_selectionnee = None  # Désélectionner l'entité
-
-                    else:
-                        # Shift+clic pour forcer sélection de case
-                        force_case = action.get("shift", False)
-                        force_attaque = action.get("ctrl", False)
-
-                        # Si une carte est sélectionnée, tenter de l'invoquer
-                        if self.carte_selectionnee and self.rendu.zone_terrain.collidepoint(action["pos_pixel"]):
-                            # Convertir en coordonnées hex
-                            offset_x = self.rendu.zone_terrain.x + self.rendu.zone_terrain.width // 2
-                            offset_y = self.rendu.zone_terrain.y + self.rendu.zone_terrain.height // 2
-                            pos_monde = (
-                                action["pos_pixel"][0] -
-                                offset_x + self.camera.pos_x,
-                                action["pos_pixel"][1] -
-                                offset_y + self.camera.pos_y
-                            )
-                            taille_hex = self.camera.get_taille_hex_actuelle()
-                            coord_hex = pixel_vers_hex(pos_monde, taille_hex)
-
-                            # Invoquer la carte
-                            self.invoquer_carte(coord_hex)
-                        # Si une entité est sélectionnée, vérifier si clic sur case de déplacement ou entité à portée
-                        elif self.entite_selectionnee and not force_case:
-                            # Convertir la position clic en coordonnées hex
-                            offset_x = self.rendu.zone_terrain.x + self.rendu.zone_terrain.width // 2
-                            offset_y = self.rendu.zone_terrain.y + self.rendu.zone_terrain.height // 2
-                            pos_monde = (
-                                action["pos_pixel"][0] -
-                                offset_x + self.camera.pos_x,
-                                action["pos_pixel"][1] -
-                                offset_y + self.camera.pos_y
-                            )
-                            taille_hex = self.camera.get_taille_hex_actuelle()
-                            coord_hex = pixel_vers_hex(pos_monde, taille_hex)
-
-                            # Vérifier si clic sur une entité à portée (seulement si Ctrl pressé)
-                            entite_cliquee = None
-                            if force_attaque and self.entites_a_portee:
-                                for entite in self.entites_a_portee:
-                                    if entite.get_pos() == coord_hex:
-                                        # Priorité aux créatures/bâtiments, sinon cases
-                                        if not entite.est_case():
-                                            entite_cliquee = entite
-                                            break
-                                        elif not entite_cliquee:
-                                            entite_cliquee = entite
-
-                            if entite_cliquee:
-                                # Attaquer la cible
-                                self.attaquer_cible(entite_cliquee)
-                            # Si c'est une créature et clic sur case de déplacement
-                            elif self.entite_selectionnee.est_creature() and coord_hex in self.cases_deplacement:
-                                self.deplacer_creature(coord_hex)
-                            else:
-                                # Sinon, sélectionner une nouvelle entité
-                                self.traiter_selection(
-                                    action["pos_pixel"], force_case)
-                        else:
-                            self.traiter_selection(
-                                action["pos_pixel"], force_case)
-
-            # Rendu
-            self.screen.fill(self.rendu.couleur_fond)
-            self.rendu.dessiner_tout(
-                self.screen, self.camera,
-                self.jeu.get_entitees(),
-                self.jeu,
-                self.entite_selectionnee,
-                self.cases_deplacement,
-                self.entites_a_portee,
-                self.carte_selectionnee
-            )
-
-            # Afficher l'écran de victoire si partie terminée
-            if self.partie_terminee:
-                self.rendu.dessiner_ecran_victoire(
-                    self.screen, self.joueur_gagnant)
-
-            self.rendu.dessiner_zones_debug(self.screen)
-            pygame.display.flip()
-            self.clock.tick(self.fps)
-        pygame.quit()
+    def afficher(self, surface):
+        """ Rendre le jeu sur la surface donnée (non utilisé actuellement) """
+        self._dessiner_scene(surface)
+        if self.partie_terminee:
+            self._dessiner_overlays_fin_partie(surface)

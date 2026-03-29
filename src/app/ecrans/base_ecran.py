@@ -6,7 +6,7 @@ class BaseEcran(ABC):
     def __init__(self, width:int, height:int):
         self._width = width
         self._height = height
-        self._prochain_ecran: str|None = None  # prochain ecran à afficher parmi [accueil, parametres, demo, bac_a_sable, quit]
+        self._prochain_ecran: str|None = None  # prochain ecran à afficher parmi [accueil, parametres, demo, playground, quit]
 
     def set_prochain_ecran(self, ecran:str|None)-> None:
         """ Définir le prochain écran à afficher"""

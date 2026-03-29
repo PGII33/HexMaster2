@@ -17,7 +17,7 @@ class EcranAccueil(BaseEcran):
         self._boutons = []
 
         self._boutons.append(BoutonHex(self._width // 2 - 100, int(self._height * 0.4), 200, 50, "Démo", self._font, action="demo"))
-        self._boutons.append(BoutonHex(self._width // 2 - 100, int(self._height * 0.5), 200, 50, "Bac à sable", self._font, action="bac_a_sable"))
+        self._boutons.append(BoutonHex(self._width // 2 - 100, int(self._height * 0.5), 200, 50, "Playground", self._font, action="playground"))
         self._boutons.append(BoutonHex(self._width // 2 - 100, int(self._height * 0.6), 200, 50, "Paramètres", self._font, action="parametres"))
 
 

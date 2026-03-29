@@ -1,23 +1,18 @@
 """ Fichier principal du jeu """
 
 import sys
-from src.demo import creer_demo
-from src.playground import creer_playground
-from src.affichage.vue_jeu import VueJeu
+from src.app.application import Application
 
 if __name__ == '__main__':
     args = sys.argv
 
-    if len(args) < 2:
-        print("Usage: python3 -m src.main [demo|playground]")
-        sys.exit(1)
-
-    mode = sys.argv[1]
+    mode = sys.argv[1] if len(sys.argv) > 1 else "accueil"
     if mode == "demo":
-        demo = creer_demo()
-        vue = VueJeu(demo)
-        vue.lancer()
-    elif mode == "playground":
-        playground = creer_playground()
-        vue = VueJeu(playground)
-        vue.lancer()
+        Application("demo").lancer()
+    elif mode in ["playground", "bac_a_sable"]:
+        Application("playground").lancer()
+    elif mode in ["accueil", "parametres"]:
+        Application(mode).lancer()
+    else:
+        print(f"Mode '{mode}' non reconnu. Utilisez 'demo', 'playground', 'accueil' ou 'parametres'.")
+        sys.exit(1)
