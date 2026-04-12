@@ -3,9 +3,10 @@ from abc import ABC, abstractmethod
 
 class BaseEcran(ABC):
     """ Classe abstraite pour les écrans du jeu"""
-    def __init__(self, width:int, height:int):
+    def __init__(self, width:int, height:int, son_manager=None):
         self._width = width
         self._height = height
+        self._son_manager = son_manager
         self._prochain_ecran: str|None = None  # prochain ecran à afficher parmi [accueil, parametres, demo, playground, quit]
 
     def set_prochain_ecran(self, ecran:str|None)-> None:

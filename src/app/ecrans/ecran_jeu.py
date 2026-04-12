@@ -5,8 +5,8 @@ from src.affichage.vue_jeu import VueJeu
 
 class EcranJeu(BaseEcran):
     """ Ecran du jeu """
-    def __init__(self, width, height, jeu):
-        super().__init__(width, height)
+    def __init__(self, width, height, jeu, son_manager=None):
+        super().__init__(width, height, son_manager)
         self.vue_jeu = VueJeu(jeu, width, height)
 
     def handle_events(self, events):
