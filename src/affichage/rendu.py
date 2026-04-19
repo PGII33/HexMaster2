@@ -260,10 +260,16 @@ class Rendu:
         if not zone_etendue.collidepoint(pos_ecran):
             return
 
-        # Essayer d'afficher le sprite si disponible (avec couleur d'équipe)
+        # Essayer d'afficher le sprite si disponible.
+        # Les bâtiments n'utilisent pas de variante de sprite par équipe.
         sprite_path = entite.get_sprite_path()
-        sprite = self.sprite_manager.get_sprite_pour_equipe(
-            sprite_path, entite.get_equipe()) if sprite_path else None
+        sprite = None
+        if sprite_path:
+            if entite.est_batiment():
+                sprite = self.sprite_manager.get_sprite(sprite_path)
+            else:
+                sprite = self.sprite_manager.get_sprite_pour_equipe(
+                    sprite_path, entite.get_equipe())
 
         if sprite:
             # Redimensionner le sprite selon la taille de l'hexagone
@@ -432,7 +438,8 @@ class Rendu:
                 # 1) Background
                 sprite_bg = entite.get_sprite_bg()
                 if sprite_bg:
-                    bg = self.sprite_manager.get_sprite(sprite_bg)
+                    bg = self.sprite_manager.get_sprite_pour_equipe(
+                        sprite_bg, entite.get_equipe())
                     if bg:
                         bg_redim = pygame.transform.scale(
                             bg, (largeur_sprite, hauteur_sprite))
@@ -442,6 +449,8 @@ class Rendu:
                 if not sprite_bg:
                     sprite_path = entite.get_sprite_path()
                     if sprite_path:
+                        # Le système de variantes d'équipe sur les cases
+                        # s'applique uniquement aux couches bg/fg explicites.
                         sprite = self.sprite_manager.get_sprite(sprite_path)
                         if sprite:
                             sprite_redim = pygame.transform.scale(
@@ -491,7 +500,8 @@ class Rendu:
                         continue
                     largeur_sprite = math.ceil(taille_hex_fg * 2)
                     hauteur_sprite = math.ceil(taille_hex_fg * math.sqrt(3))
-                    fg = self.sprite_manager.get_sprite(sprite_fg)
+                    fg = self.sprite_manager.get_sprite_pour_equipe(
+                        sprite_fg, entite.get_equipe())
                     if fg:
                         fg_redim = pygame.transform.scale(
                             fg, (largeur_sprite, hauteur_sprite))

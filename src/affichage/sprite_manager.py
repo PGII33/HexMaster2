@@ -19,6 +19,8 @@ class SpriteManager:
         self._overlay_cache = {} # Overlays redimensionnés en cache, clé: (chemin, largeur, hauteur)
         # Pour ne notifier qu'une fois par sprite manquant
         self.sprite_manquant_notifie = set()
+        # Pour ne notifier qu'une fois par variante d'équipe manquante
+        self.sprite_equipe_manquant_notifie = set()
         self.cartes_manquant_notifie = set()
 
     def charger_sprite(self, chemin):
@@ -84,7 +86,7 @@ class SpriteManager:
     def get_sprite_pour_equipe(self, sprite_path, equipe):
         """Récupère le sprite adapté à l'équipe
 
-        Cherche d'abord un sprite spécifique à l'équipe (ex: paysan_team_1.png),
+        Cherche d'abord un sprite spécifique à l'équipe (ex: paysan_equipe_1.png),
         sinon retourne le sprite de base.
 
         Returns:
@@ -99,11 +101,24 @@ class SpriteManager:
 
         # Essayer d'abord avec le sprite d'équipe
         base, ext = os.path.splitext(sprite_path)
-        sprite_equipe_path = f"{base}_team_{equipe}{ext}"
+        sprite_equipe_path = f"{base}_equipe_{equipe}{ext}"
 
-        sprite = self.get_sprite(sprite_equipe_path)
-        if sprite:
-            return sprite
+        # La variante d'équipe est optionnelle :
+        # on évite de passer par get_sprite si le fichier n'existe pas
+        # pour ne pas polluer les logs.
+        if sprite_equipe_path in self.sprites:
+            return self.sprites[sprite_equipe_path]
+
+        if os.path.exists(sprite_equipe_path):
+            sprite = self.get_sprite(sprite_equipe_path)
+            if sprite:
+                return sprite
+        elif sprite_equipe_path not in self.sprite_equipe_manquant_notifie:
+            print(
+                "Variante d'equipe introuvable: "
+                f"{sprite_equipe_path} (fallback sur {sprite_path})"
+            )
+            self.sprite_equipe_manquant_notifie.add(sprite_equipe_path)
 
         # Sinon retourner le sprite de base
         return self.get_sprite(sprite_path)
