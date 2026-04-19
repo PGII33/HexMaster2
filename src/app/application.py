@@ -7,7 +7,7 @@ from .ecrans.ecran_parametres import EcranParametres
 from .ecrans.ecran_credits import EcranCredits
 from .ecrans.ecran_jeu import EcranJeu
 from src.audio.son_manager import SonManager
-
+from src.audio.parametres_audio_store import ParametresAudioStore
 from src.demo import creer_demo
 from src.playground import creer_playground
 
@@ -16,6 +16,7 @@ class Application:
     """ Classe principale de l'application"""
     def __init__(self, ecran_initial:str):
         self._assets_dir = Path(__file__).resolve().parents[2] / "assets"
+        self._paramtres_dir = Path(__file__).resolve().parents[2] / "data/parametres"
         self.FPS = 60
         self._ecrans: dict[str, BaseEcran] = {}
         pygame.init()
@@ -25,8 +26,11 @@ class Application:
         pygame.display.set_caption("HexMaster 2")
         pygame.display.set_icon(pygame.image.load(self._assets_dir / "autre" / "icon.png"))
 
+        self._son_audio_store = ParametresAudioStore(self._paramtres_dir / "audio.json")
+
         self._son_manager = SonManager(self._assets_dir)
         self._son_manager.initialiser()
+        self._son_audio_store.load_into_manager(self._son_manager)
         self._son_manager.charger_son("ui_click", Path("son") / "sfx" / "ui" / "click.mp3")
         self._playlist_musiques = [
             Path("son") / "musiques" / "acalmie.mp3",
@@ -95,4 +99,6 @@ class Application:
                 else:
                     self.changer_ecran(prochain_ecran)
             pygame.display.flip()
+        self._son_audio_store.save_from_manager(self._son_manager)
+        print("Paramètres audio sauvegardés.")
         pygame.quit()

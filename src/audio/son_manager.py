@@ -16,6 +16,12 @@ class SonManager:
         self._volume_musique: float = 1.0
         self._mixer_initialise = False
 
+        self._default_dict = {
+            "volume_global": 1.0,
+            "volume_sfx": 1.0,
+            "volume_musique": 1.0
+        }
+
     def initialiser(self) -> None:
         """Initialise pygame.mixer si nécessaire."""
         if self._mixer_initialise:
@@ -107,21 +113,6 @@ class SonManager:
         if pygame.mixer.get_init():
             pygame.mixer.music.unpause()
 
-    def definir_volume_global(self, volume: float) -> None:
-        """Définit le volume global sur une valeur entre 0 et 1."""
-        self._volume_global = max(0.0, min(1.0, volume))
-        self._appliquer_volumes()
-
-    def definir_volume_sfx(self, volume: float) -> None:
-        """Définit le volume des effets sonores."""
-        self._volume_sfx = max(0.0, min(1.0, volume))
-        self._appliquer_volumes()
-
-    def definir_volume_musique(self, volume: float) -> None:
-        """Définit le volume de la musique."""
-        self._volume_musique = max(0.0, min(1.0, volume))
-        self._appliquer_volumes()
-
     def couper_son(self) -> None:
         """Coupe tous les sons et la musique."""
         if pygame.mixer.get_init():
@@ -136,3 +127,58 @@ class SonManager:
 
         if pygame.mixer.get_init():
             pygame.mixer.music.set_volume(self._volume_global * self._volume_musique)
+
+    def to_dict(self) -> dict:
+        """Retourne un dictionnaire avec les paramètres de volume actuels."""
+        return {
+            "volume_global": self._volume_global,
+            "volume_sfx": self._volume_sfx,
+            "volume_musique": self._volume_musique,
+        }
+
+    def from_dict(self, data: dict) -> None:
+        """Charge les paramètres de volume à partir d'un dictionnaire."""
+        try:
+            if not isinstance(data, dict):
+                raise TypeError("Données de volume doivent être un dictionnaire.")
+            if not ("volume_global" in data and isinstance(data["volume_global"], (int, float))):
+                raise ValueError("volume_global manquant ou invalide")
+            if not ("volume_sfx" in data and isinstance(data["volume_sfx"], (int, float))):
+                raise ValueError("volume_sfx manquant ou invalide")
+            if not ("volume_musique" in data and isinstance(data["volume_musique"], (int, float))):
+                raise ValueError("volume_musique manquant ou invalide")
+        except (TypeError, ValueError) as e:
+            print(f"Erreur: {e}")
+            print("Utilisation des valeurs par défaut.")
+            data = self._default_dict
+        self._volume_global = max(0.0, min(1.0, float(data.get("volume_global", 1.0))))
+        self._volume_sfx = max(0.0, min(1.0, float(data.get("volume_sfx", 1.0))))
+        self._volume_musique = max(0.0, min(1.0, float(data.get("volume_musique", 1.0))))
+        self._appliquer_volumes()
+
+    def get_volume_global(self) -> float:
+        """Retourne le volume global actuel."""
+        return self._volume_global
+
+    def set_volume_global(self, volume: float) -> None:
+        """Définit le volume global sur une valeur entre 0 et 1."""
+        self._volume_global = max(0.0, min(1.0, volume))
+        self._appliquer_volumes()
+
+    def get_volume_sfx(self) -> float:
+        """Retourne le volume des effets sonores actuel."""
+        return self._volume_sfx
+
+    def set_volume_sfx(self, volume: float) -> None:
+        """Définit le volume des effets sonores."""
+        self._volume_sfx = max(0.0, min(1.0, volume))
+        self._appliquer_volumes()
+
+    def get_volume_musique(self) -> float:
+        """Retourne le volume de la musique actuel."""
+        return self._volume_musique
+    
+    def set_volume_musique(self, volume: float) -> None:
+        """Définit le volume de la musique."""
+        self._volume_musique = max(0.0, min(1.0, volume))
+        self._appliquer_volumes()
