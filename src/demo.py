@@ -40,13 +40,13 @@ def creer_demo()-> Classique:
     terrain_demo = Terrain(case_demo)
 
     # Créer les decks avec des définitions (id, équipe)
-    deck_j1_definitions = [("fermier", 2)] * NOMBRE_FERMIERS_DECK + \
-                        [("terrain", 2)] * NOMBRE_TERRAIN + \
-                        [("bucheron", 2)] * NOMBRE_BUCHERON_DECK + \
-                        [("chevalier", 2)] * NOMBRE_CHEVALIER_DECK + \
-                        [("archere", 2)] * NOMBRE_ARCHERE_DECK + \
-                        [("piques", 2)] * NOMBRE_PIQUES_DECK + \
-                        [("pluie", 2)] * NOMBRE_BARRIERES_DECK
+    deck_j1_definitions = [("fermier", 1)] * NOMBRE_FERMIERS_DECK + \
+                        [("terrain", 1)] * NOMBRE_TERRAIN + \
+                        [("bucheron", 1)] * NOMBRE_BUCHERON_DECK + \
+                        [("chevalier", 1)] * NOMBRE_CHEVALIER_DECK + \
+                        [("archere", 1)] * NOMBRE_ARCHERE_DECK + \
+                        [("piques", 1)] * NOMBRE_PIQUES_DECK + \
+                        [("pluie", 1)] * NOMBRE_BARRIERES_DECK
 
     deck_j2_definitions = [("fermier", 2)] * NOMBRE_FERMIERS_DECK + \
                         [("terrain", 2)] * NOMBRE_TERRAIN + \
