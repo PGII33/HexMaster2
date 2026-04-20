@@ -22,6 +22,10 @@ from src.const import (
     CLR_EQ_2,
     CLR_EQ_3,
     CLR_EQ_4,
+    CLR_EQ_5,
+    CLR_EQ_6,
+    CLR_EQ_7,
+    CLR_EQ_8,
     CLR_EQ_DEF,
     TAILLE_POLICE
 )
@@ -292,6 +296,14 @@ class Rendu:
                 couleur = CLR_EQ_3
             elif entite.get_equipe() == 4:
                 couleur = CLR_EQ_4
+            elif entite.get_equipe() == 5:
+                couleur = CLR_EQ_5
+            elif entite.get_equipe() == 6:
+                couleur = CLR_EQ_6
+            elif entite.get_equipe() == 7:
+                couleur = CLR_EQ_7
+            elif entite.get_equipe() == 8:
+                couleur = CLR_EQ_8
             else:
                 couleur = CLR_EQ_DEF
 
@@ -445,7 +457,7 @@ class Rendu:
                             bg, (largeur_sprite, hauteur_sprite))
                         screen.blit(bg_redim, bg_redim.get_rect(center=pos_ecran))
 
-                # Fallback : ancien sprite_path unique si bg non défini
+                # Fallback : sprite_path unique si bg non défini
                 if not sprite_bg:
                     sprite_path = entite.get_sprite_path()
                     if sprite_path:

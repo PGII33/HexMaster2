@@ -25,20 +25,28 @@ def creer_demo()-> Classique:
 
     # Terrain avec les cases
     posNeutre = [(1, 0), (-1, 1), (-1, 0), (1, -1)]
-    posPiques = [(0, 0), (0, 1), (0, -1)]
+    posPiques = [(0, 1), (0, -1)]
+    posForet = [(0, 0)]
     posj1 = [(-2, 0), (-2, 1), (-2, 2), (-3, 1), (-3, 2)]
 
     cNeutre = [chargeur.creer_instance("terrain", x, 0) for x in posNeutre]
-    cPiques = [chargeur.creer_instance("foret", x, 0) for x in posPiques]
+    cForet = [chargeur.creer_instance("foret", x, 0) for x in posForet]
+    cPiques = [chargeur.creer_instance("piques", x, 0) for x in posPiques]
     cj1 = [chargeur.creer_instance("terrain", x, 1) for x in posj1]
     cj2 = [chargeur.creer_instance(
         "terrain", (-x[0], -x[1]), 2) for x in posj1]
 
-    case_demo = cNeutre + cj1 + cj2 + cPiques
+    case_demo = cNeutre + cj1 + cj2 + cPiques + cForet
     terrain_demo = Terrain(case_demo)
 
     # Créer les decks avec des définitions (id, équipe)
-    deck_j1_definitions =[("archere", 1)] * NOMBRE_ARCHERE_DECK
+    deck_j1_definitions = [("fermier", 2)] * NOMBRE_FERMIERS_DECK + \
+                        [("terrain", 2)] * NOMBRE_TERRAIN + \
+                        [("bucheron", 2)] * NOMBRE_BUCHERON_DECK + \
+                        [("chevalier", 2)] * NOMBRE_CHEVALIER_DECK + \
+                        [("archere", 2)] * NOMBRE_ARCHERE_DECK + \
+                        [("piques", 2)] * NOMBRE_PIQUES_DECK + \
+                        [("pluie", 2)] * NOMBRE_BARRIERES_DECK
 
     deck_j2_definitions = [("fermier", 2)] * NOMBRE_FERMIERS_DECK + \
                         [("terrain", 2)] * NOMBRE_TERRAIN + \
