@@ -5,7 +5,6 @@ from src.deck import Deck
 from src.joueur import Joueur
 from src.jeu import Classique
 from src.chargeur.entite_chargeur import EntiteChargeur
-from src.affichage.vue_jeu import VueJeu
 from src.const import (
     PI_DEPART,
     NOMBRE_FERMIERS_DECK,
@@ -73,7 +72,6 @@ def creer_demo()-> Classique:
     return Classique([j1, j2], terrain_demo)
 
 if __name__ == '__main__':
-
-    demo = creer_demo()
-    vue = VueJeu(demo)
-    vue.lancer()
+    from src.app.application import Application
+    app = Application("demo")
+    app.lancer()

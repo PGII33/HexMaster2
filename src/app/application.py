@@ -19,6 +19,7 @@ class Application:
         self._paramtres_dir = Path(__file__).resolve().parents[2] / "data/parametres"
         self.FPS = 60
         self._ecrans: dict[str, BaseEcran] = {}
+        self._modes_partie = {"demo", "playground"}
         pygame.init()
         self._width = 1280
         self._height = 720
@@ -46,13 +47,18 @@ class Application:
 
         self.creer_ecran("accueil", EcranAccueil(self._width, self._height, self._son_manager))
         self.creer_ecran("parametres", EcranParametres(self._width, self._height, self._son_manager))
-        self.creer_ecran("demo", EcranJeu(self._width, self._height, creer_demo(), self._son_manager))
-        self.creer_ecran("playground", EcranJeu(self._width, self._height, creer_playground(), self._son_manager))
         self.creer_ecran("credits", EcranCredits(self._width, self._height, self._son_manager))
-        if ecran_initial not in self._ecrans:
+        if ecran_initial not in self._ecrans and ecran_initial not in self._modes_partie:
             raise ValueError(f"Ecran initial '{ecran_initial}' non trouvé parmi les écrans disponibles")
-        self._ecran_actuel: BaseEcran = self._ecrans[ecran_initial] 
+
+        if ecran_initial in self._modes_partie:
+            self._ecran_actuel = self._creer_ecran_partie(ecran_initial)
+        else:
+            self._ecran_actuel = self._ecrans[ecran_initial]
+
+        self._nom_ecran_actuel = ecran_initial
         self._jouer_musique_suivante()
+        self._ecran_actuel.on_enter()
 
     def creer_ecran(self, nom:str, ecran:BaseEcran):
         """ Ajouter un écran au dictionnaire des écrans disponibles"""
@@ -60,10 +66,28 @@ class Application:
     
     def changer_ecran(self, nom:str):
         """ Changer l'écran actuel"""
-        if nom in self._ecrans:
-            self._ecran_actuel = self._ecrans[nom]
+        if nom in self._modes_partie:
+            nouvel_ecran = self._creer_ecran_partie(nom)
+        elif nom in self._ecrans:
+            nouvel_ecran = self._ecrans[nom]
         else:
             raise ValueError(f"Ecran '{nom}' non trouvé dans les écrans disponibles")
+
+        self._ecran_actuel.on_exit()
+        self._ecran_actuel = nouvel_ecran
+        self._nom_ecran_actuel = nom
+        self._ecran_actuel.on_enter()
+
+    def _creer_ecran_partie(self, mode: str) -> EcranJeu:
+        """Construit une nouvelle partie pour le mode demandé."""
+        if mode == "demo":
+            jeu = creer_demo()
+        elif mode == "playground":
+            jeu = creer_playground()
+        else:
+            raise ValueError(f"Mode de partie inconnu: {mode}")
+
+        return EcranJeu(self._width, self._height, jeu, self._son_manager)
 
     def _jouer_musique_suivante(self) -> None:
         """Joue la prochaine musique de la playlist globale."""
