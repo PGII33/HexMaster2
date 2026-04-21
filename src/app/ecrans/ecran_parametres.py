@@ -16,6 +16,12 @@ class EcranParametres(BaseEcran):
         self._boutons = []
         self._boutons.append(BoutonHex(int(self._width * 0.02), int(self._height * 0.02), 100, 40, "Retour", self._font, action="accueil"))
 
+        self._textes = []
+        self._textes.append(self._font.render("Paramètres", True, c.NOIR))
+        self._textes.append(self._font.render("Volume global", True, c.NOIR))
+        self._textes.append(self._font.render("Volume SFX", True, c.NOIR))
+        self._textes.append(self._font.render("Volume musique", True, c.NOIR))
+
         self._sliders = []
         self._sliders.append(Slider(int(self._width * 0.1), int(self._height * 0.2), int(self._width * 0.4), 20, min_value=0.0, max_value=1.0, initial_value=son_manager.get_volume_global()))
         self._sliders.append(Slider(int(self._width * 0.1), int(self._height * 0.3), int(self._width * 0.4), 20, min_value=0.0, max_value=1.0, initial_value=son_manager.get_volume_sfx()))
@@ -48,10 +54,26 @@ class EcranParametres(BaseEcran):
     def afficher(self, surface):
         """ Afficher l'écran des paramètres sur la surface donnée"""
         surface.fill(c.GRIS_CLAIR)
+
+        # Titre de la page
+        surface.blit(self._textes[0], (self._width // 2 - self._textes[0].get_width() // 2, int(self._height * 0.05)))
+
         for bouton in self._boutons:
             bouton.afficher(surface)
+
+        # Textes des sliders
+        for i in range(1, 4):
+            surface.blit(self._textes[i], (int(self._width * 0.1), int(self._height * (0.2 + (i-1)*0.1)) - self._textes[i].get_height() - 5))
+
         for slider in self._sliders:
             slider.afficher(surface)
+
+        # Valeurs des sliders
+        for i in range(3):
+            valeur = f"{int(self._sliders[i].get_value() * 100)}%"
+            texte_valeur = self._font.render(valeur, True, c.NOIR)
+            surface.blit(texte_valeur, (int(self._width * 0.1) + int(self._width * 0.4) + 10, int(self._height * (0.2 + i*0.1))))
+
 
     def update(self, dt):
         """ Mettre à jour l'état de l'écran des paramètres"""
