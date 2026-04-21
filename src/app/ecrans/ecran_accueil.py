@@ -16,10 +16,13 @@ class EcranAccueil(BaseEcran):
 
         self._boutons = []
 
-        self._boutons.append(BoutonHex(self._width // 2 - 100, int(self._height * 0.4), 200, 50, "Démo", self._font, action="demo"))
-        self._boutons.append(BoutonHex(self._width // 2 - 100, int(self._height * 0.5), 200, 50, "Playground", self._font, action="playground"))
-        self._boutons.append(BoutonHex(self._width // 2 - 100, int(self._height * 0.6), 200, 50, "Paramètres", self._font, action="parametres"))
-        self._boutons.append(BoutonHex(self._width // 2 - 100, int(self._height * 0.7), 200, 50, "Crédits", self._font, action="credits"))
+        BUTTON_WIDTH = 300
+        BUTTON_HEIGHT = 75
+
+        self._boutons.append(BoutonHex(self._width // 2 - BUTTON_WIDTH // 2, int(self._height * 0.3), BUTTON_WIDTH, BUTTON_HEIGHT, "Démo", self._font, action="demo", couleur_base=c.CLR_EQ_1_2))
+        self._boutons.append(BoutonHex(self._width // 2 - BUTTON_WIDTH // 2, int(self._height * 0.42), BUTTON_WIDTH, BUTTON_HEIGHT, "Playground", self._font, action="playground", couleur_base=c.CLR_EQ_2_2))
+        self._boutons.append(BoutonHex(self._width // 2 - BUTTON_WIDTH // 2, int(self._height * 0.54), BUTTON_WIDTH, BUTTON_HEIGHT, "Paramètres", self._font, action="parametres", couleur_base=c.CLR_EQ_3_2))
+        self._boutons.append(BoutonHex(self._width // 2 - BUTTON_WIDTH // 2, int(self._height * 0.66), BUTTON_WIDTH, BUTTON_HEIGHT, "Crédits", self._font, action="credits", couleur_base=c.CLR_EQ_4_2))
 
 
     def handle_events(self, events:list):
