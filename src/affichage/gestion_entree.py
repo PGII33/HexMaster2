@@ -1,4 +1,4 @@
-""" Convertion des entrées utilisateur en actions de jeu """
+""" Conversion des entrées utilisateur en actions de jeu """
 # pylint: disable=no-member
 
 import pygame
@@ -65,3 +65,9 @@ class GestionEntree:
         """ Vérifie si Ctrl est actuellement pressé """
         mods = pygame.key.get_mods()
         return bool(mods & (pygame.KMOD_CTRL | pygame.KMOD_LCTRL | pygame.KMOD_RCTRL))
+
+    @staticmethod
+    def shift_est_presse():
+        """ Vérifie si Shift est actuellement pressé """
+        mods = pygame.key.get_mods()
+        return bool(mods & (pygame.KMOD_SHIFT | pygame.KMOD_LSHIFT | pygame.KMOD_RSHIFT))

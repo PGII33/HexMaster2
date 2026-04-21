@@ -1,7 +1,6 @@
 """ Fichier à lancer pour voir toutes les créatures, bâtiments et cases du jeu.
 Les sorts seront en mains. """
 
-from src.affichage.vue_jeu import VueJeu
 from src.terrain import Terrain
 from src.deck import Deck
 from src.joueur import Joueur
@@ -93,6 +92,6 @@ def creer_playground()-> Classique:
     return Classique([j1, j2, j3, j4], terrain_playground)
 
 if __name__ == '__main__':
-    playground = creer_playground()
-    vue = VueJeu(playground)
-    vue.lancer()
+    from src.app.application import Application
+    app = Application("playground")
+    app.lancer()
