@@ -7,12 +7,13 @@ class StatutActif:
     """ Représente un statut persistant appliqué à une entité """
 
     def __init__(self, nom: str, duree: int, phase: PhaseTour = PhaseTour.FIN_TOUR,
-                 modificateurs: dict[str, int] = None, nom_effet: str = None):
-        """ Initialise un statut actif """
+                 modificateurs: dict[str, int] = None, nom_effet: str = None, est_buff:bool = False):
+        """ Initialise un statut actif, par défaut, il est considéré comme debuff"""
         self.nom = nom
         self.duree_restante = duree
         self.phase = phase
         self.modificateurs = dict(modificateurs) if modificateurs is not None else {}
+        self.est_buff = est_buff
         self.nom_effet = nom_effet
 
     def get_nom(self):
@@ -22,6 +23,14 @@ class StatutActif:
     def get_duree_restante(self):
         """ Retourne le nombre de tours restants """
         return self.duree_restante
+
+    def est_buff(self):
+        """ Retourne vrai si le statut est un buff, faux si c'est un debuff """
+        return self.est_buff
+
+    def est_debuff(self):
+        """ Retourne vrai si le statut est un debuff, faux si c'est un buff """
+        return not self.est_buff
 
     def set_duree_restante(self, duree: int):
         """ Modifie la durée restante du statut """
