@@ -1,4 +1,7 @@
 """ Fichier de gestion des Bâtiments """
+
+
+from __future__ import annotations
 from typing_extensions import override
 from src.unite import Unite
 from src.competences import Competence
@@ -9,12 +12,12 @@ class Batiment(Unite):
 
     def __init__(self, pv: int, nom: str, pos: tuple[int, int], cout: int,
                  equipe: int, combat: int, demolition: int, degradation: int,
-                 portee: int, control: int, comp: list[Competence] = None, sprite_path: str = None,
+                 portee: int, control: int, comp: list[Competence] = None, tags: list[Tag] = None, sprite_path: str = None,
                  carte_path: str = None):
         """ Initialise le bâtiment """
         super().__init__(pv=pv, nom=nom, pos=pos, cout=cout, equipe=equipe,
                          combat=combat, demolition=demolition, degradation=degradation,
-                         portee=portee, control=control, comp=comp, sprite_path=sprite_path,
+                         portee=portee, control=control, comp=comp, tags=tags, sprite_path=sprite_path,
                          carte_path=carte_path)
 
     @override

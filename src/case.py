@@ -1,4 +1,6 @@
 """ Fichier de gestion des Cases """
+
+from __future__ import annotations
 from typing_extensions import override
 from src.entite import Entite
 from src.competences import Competence
@@ -9,13 +11,13 @@ class Case(Entite):
 
     def __init__(self, pv: int, nom: str, pos: tuple[int, int],
                  cout: int, equipe: int, control_max: int, control:int=0,
-                 comp: list[Competence] = None, sprite_path: str = None,
+                 comp: list[Competence] = None, tags: list[Tag] = None, sprite_path: str = None,
                  carte_path: str = None, sprite_bg: str = None,
                  sprite_fg: str = None):
         """ Initialise la case """
         super().__init__(pv=pv, nom=nom, pos=pos, cout=cout, equipe=equipe,
                          control=control,
-                         comp=comp, sprite_path=sprite_path,
+                         comp=comp, tags=tags, sprite_path=sprite_path,
                          carte_path=carte_path)
         self.control_max = control_max
         self.sprite_bg = sprite_bg

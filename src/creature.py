@@ -1,4 +1,6 @@
 """ Fichier de gestion des creatures """
+
+from __future__ import annotations
 from typing_extensions import override
 from src.unite import Unite
 from src.competences import Competence
@@ -10,12 +12,12 @@ class Creature(Unite):
     def __init__(self, pv: int, nom: str, pos: tuple[int, int],
                  cout: int, equipe: int, combat: int, demolition: int,
                  degradation: int, portee: int, control: int, mouv: int,
-                 comp: list[Competence] = None, sprite_path: str = None,
+                 comp: list[Competence] = None, tags: list[Tag] = None, sprite_path: str = None,
                  carte_path: str = None):
         """ Initialise la creature """
         super().__init__(pv=pv, nom=nom, pos=pos, cout=cout, equipe=equipe,
                          combat=combat, demolition=demolition, degradation=degradation,
-                         control=control, portee=portee, comp=comp, sprite_path=sprite_path,
+                         control=control, portee=portee, comp=comp, tags=tags, sprite_path=sprite_path,
                          carte_path=carte_path)
         self.mouv = mouv  # Points de mouvements
         self.mouv_base_max = mouv  # Mouvement maximum

@@ -1,0 +1,27 @@
+{
+  "id": "cercle",
+  "nom": "Cercle",
+  "type": "creature",
+  "sprite": "mods/debug/assets/sprites/creatures/cercle.png",
+  "carte": "mods/debug/assets/cartes/creatures/cercle.png",
+  
+  "stats": {
+    "pv": 5,
+    "cout": 2,
+    "combat": 3,
+    "demolition": 1,
+    "degradation": 0,
+    "portee": 1,
+    "mouvement": 2,
+    "control": 1
+  },
+
+    "competences": [
+    {
+      "nom": "abattage",
+      "phase": "APRES_ATTAQUE"
+    }
+  ],
+  
+  "description": "Un cercle, une unité particulièrement ... intéressante."
+}

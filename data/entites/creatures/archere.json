@@ -15,6 +15,10 @@
     "mouvement": 1,
     "control": 2
   },
+
+  "tags": [
+    "archer"
+  ],
   
   "description": "La distance c'est la vie !"
 }

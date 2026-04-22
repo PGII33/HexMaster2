@@ -41,7 +41,9 @@ def creer_playground()-> Classique:
     c_archere = [chargeur.creer_instance("archere", (1, 1), 4)]
     c_belier = [chargeur.creer_instance("belier", (1, 2), 3)]
 
-    c_creature = c_chevalier + c_fermier + c_bucheron + c_archere + c_belier
+    c_temp = [chargeur.creer_instance("cercle", (1, 3), 1)]
+
+    c_creature = c_chevalier + c_fermier + c_bucheron + c_archere + c_belier + c_temp
 
     # Batiment
     c_palissade = [chargeur.creer_instance("palissade", (-1, 0), 2)]

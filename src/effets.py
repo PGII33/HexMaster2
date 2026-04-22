@@ -113,7 +113,7 @@ class Effet:
 
     @staticmethod
     def pluie_de_fleches(origine, toutes_entitees, cible, joueurs=None):
-        """ Effet pluie de flèches : inflige les dégats de toutes les archères alliées à une cible
+        """ Effet pluie de flèches : inflige les dégats de toutes les "archer" alliées à une cible
 
         Args:
             origine: L'entité qui possède la compétence
@@ -127,10 +127,8 @@ class Effet:
         equipe_origine = origine.get_equipe()
         total_dgts = 0
         for entite in toutes_entitees:
-            if (
-                entite.est_creature()
-                and entite.get_equipe() == equipe_origine
-                and entite.get_nom().lower() in ["archere", "archer"]
+            if (entite.get_equipe() == equipe_origine
+                and "archer" in entite.get_tags()
             ):
                 if cible.est_creature():
                     total_dgts += entite.get_combat()

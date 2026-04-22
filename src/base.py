@@ -1,11 +1,12 @@
 """ Fichier de gestion de base """
 
+from __future__ import annotations
 from src.competences import Competence
 
 class Base:
     """ Classe de base """
     def __init__(self, nom:str, pos:tuple[int, int], cout:int,
-                 equipe:int, comp:list[Competence]=None, sprite_path:str=None,
+                 equipe:int, comp:list[Competence]=None, tags:list[Tag]=None, sprite_path:str=None,
                  carte_path:str=None):
         """ Initialise la base """
         self.nom = nom
@@ -14,6 +15,7 @@ class Base:
         self.equipe = equipe
         self.comp = comp if comp is not None else []
         self.statuts_actif = []
+        self.tags = tags if tags is not None else []
         self.sprite_path = sprite_path
         self.carte_path = carte_path
 
@@ -73,6 +75,23 @@ class Base:
         """ Retire une competence """
         if comp in self.comp:
             self.comp.remove(comp)
+
+    def get_tags(self):
+        """ Retourne les tags """
+        return self.tags
+
+    def set_tags(self, tags:list[Tag]):
+        """ Modifie les tags """
+        self.tags = tags
+    
+    def ajouter_tag(self, tag:Tag):
+        """ Ajoute un tag """
+        self.tags.append(tag)
+    
+    def retirer_tag(self, tag:Tag):
+        """ Retire un tag """
+        if tag in self.tags:
+            self.tags.remove(tag)
 
     def get_statuts(self):
         """ Retourne les statuts actifs de l'entité """

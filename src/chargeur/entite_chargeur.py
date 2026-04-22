@@ -7,22 +7,37 @@ from src.case import Case
 from src.sort import Sort
 from src.competences import Competence
 from src.phase import PhaseTour
+from src.tag import Tag
 
 
 class EntiteChargeur:
     """ Chargeur d'entites depuis des fichiers JSON """
 
-    def __init__(self, chemin_data="data/entites"):
+    def __init__(self, chemin_data="data/entites", chemin_mods="mods"):
         self.chemin_data = chemin_data
+        self.chemin_mods = chemin_mods
         self.entites_chargees = {}
-        self.mods_actifs = []
+        self.mods_actifs = self.charger_mods_actifs()
+
+    def charger_mods_actifs(self):
+        """Retourne les dossiers de premier niveau présents dans le dossier des mods."""
+        if not os.path.exists(self.chemin_mods):
+            return []
+
+        mods = []
+        for entree in os.scandir(self.chemin_mods):
+            if entree.is_dir():
+                mods.append(entree.name)
+
+        return mods
 
     def charger_toutes_les_entites(self):
         """Charge toutes les entités depuis data/ et mods/"""
         self.charger_depuis_dossier(self.chemin_data)
 
         for mod in self.mods_actifs:
-            self.charger_depuis_dossier(f"mods/{mod}/entites")
+            print(f"Chargement des entités du mod : {mod}")
+            self.charger_depuis_dossier(os.path.join(self.chemin_mods, mod, "data", "entites"))
 
     def charger_depuis_dossier(self, chemin):
         """Parcourt récursivement un dossier et charge tous les fichiers JSON"""
@@ -96,6 +111,26 @@ class EntiteChargeur:
 
         return competences
 
+    def charger_tags(self, definition):
+        """ Charge les tags depuis la définition JSON
+
+        Args:
+            definition: Dictionnaire contenant la définition de l'entité
+
+        Returns:
+            Liste de tags ou liste vide
+        """
+        tags = []
+
+        if "tags" not in definition:
+            return tags
+
+        for tag_str in definition["tags"]:
+            tag = Tag(tag_str)
+            tags.append(tag)
+
+        return tags
+
     def creer_creature(self, definition, pos, equipe):
         """Crée une instance de créature"""
         stats = definition["stats"]
@@ -114,6 +149,7 @@ class EntiteChargeur:
             control=stats["control"],
             mouv=stats["mouvement"],
             comp=self.charger_competences(definition),
+            tags=self.charger_tags(definition),
             sprite_path=sprite_path,
             carte_path=carte_path
         )
@@ -136,6 +172,7 @@ class EntiteChargeur:
             portee=stats["portee"],
             control=stats["control"],
             comp=self.charger_competences(definition),
+            tags=self.charger_tags(definition),
             sprite_path=sprite_path,
             carte_path=carte_path
         )
@@ -158,7 +195,8 @@ class EntiteChargeur:
             sprite_path=sprite_path,
             carte_path=carte_path,
             sprite_bg=sprite_bg,
-            sprite_fg=sprite_fg
+            sprite_fg=sprite_fg,
+            tags=self.charger_tags(definition)
         )
 
     def creer_sort(self, definition, pos, equipe):
@@ -173,5 +211,6 @@ class EntiteChargeur:
             cout=stats["cout"],
             comp=self.charger_competences(definition),
             sprite_path=sprite_path,
-            carte_path=carte_path
+            carte_path=carte_path,
+            tags=self.charger_tags(definition)
         )
