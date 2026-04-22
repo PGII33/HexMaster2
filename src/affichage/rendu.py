@@ -11,7 +11,6 @@ from src.affichage.sprite_manager import (
 )
 from src.const import (
     CLR_FOND_TERRAIN,
-    CLR_FOND_MAIN,
     CLR_CARTE_FOND,
     CLR_CARTE_TEXTE,
     CLR_CARTE_SURBRILLANCE,
@@ -26,7 +25,8 @@ from src.const import (
     CLR_EQ_6,
     CLR_EQ_7,
     CLR_EQ_8,
-    CLR_EQ_DEF,
+    CLR_EQ_0,
+    CLR_BLANC,
     TAILLE_POLICE
 )
 
@@ -68,28 +68,46 @@ class Rendu:
             rect = overlay.get_rect(center=pos_ecran)
             screen.blit(overlay, rect)
 
+    def _get_couleur_joueur(self, equipe, numero:int):
+        match equipe:
+            case 1:
+                return CLR_EQ_1[numero]
+            case 2:
+                return CLR_EQ_2[numero]
+            case 3:
+                return CLR_EQ_3[numero]
+            case 4:
+                return CLR_EQ_4[numero]
+            case 5:
+                return CLR_EQ_5[numero]
+            case 6:
+                return CLR_EQ_6[numero]
+            case 7:
+                return CLR_EQ_7[numero]
+            case 8:
+                return CLR_EQ_8[numero]
+            case _:
+                return CLR_EQ_0[numero]
+
     def dessiner_entete(self, screen, jeu):
         """ Dessine l'en-tête du jeu """
-        pygame.draw.rect(screen, (50, 50, 60), self.zone_entete)
-
         j_act = jeu.get_joueur_actif()
+        couleur = self._get_couleur_joueur(j_act.get_equipe(), 0)
+        pygame.draw.rect(screen, couleur, self.zone_entete)
+
         texte = f"Joueur Actuel: {j_act.get_nom()} | PI : {j_act.get_pi()}"
         texte_surface = self.font.render(texte, True, (255, 255, 255))
         screen.blit(texte_surface, (self.zone_entete.x +
                     10, self.zone_entete.y + 10))
 
-    def dessiner_zones_debug(self, screen):
-        """ fonction temporaire, pour le debug des zones d'affichage """
-        pygame.draw.rect(screen, (25, 100, 150), self.zone_entete, 2)
-        pygame.draw.rect(screen, (100, 100, 255), self.zone_terrain, 2)
-        pygame.draw.rect(screen, (255, 100, 100), self.zone_info, 2)
-        pygame.draw.rect(screen, (100, 255, 100), self.zone_main, 2)
-
-    def dessiner_bouton_fin_tour(self, screen):
+    def dessiner_bouton_fin_tour(self, joueur_actif, screen):
         """ Dessine le bouton fin de tour """
         if self.bouton_fin_tour:
-            pygame.draw.rect(screen, CLR_BTN_FIN_TOUR, self.bouton_fin_tour)
-            pygame.draw.rect(screen, CLR_BTN_FIN_TOUR_CONTOUR,
+            
+            clr_btn = self._get_couleur_joueur(joueur_actif.get_equipe(), 2)
+            clr_btn_contour = self._get_couleur_joueur(joueur_actif.get_equipe(), 1)
+            pygame.draw.rect(screen, clr_btn, self.bouton_fin_tour)
+            pygame.draw.rect(screen, clr_btn_contour,
                              self.bouton_fin_tour, 3)
             texte = self.font.render(
                 "Fin de Tour", True, CLR_BTN_FIN_TOUR_TEXTE)
@@ -102,7 +120,7 @@ class Rendu:
             return
 
         # Fond de la zone
-        pygame.draw.rect(screen, CLR_FOND_MAIN, self.zone_main)
+        pygame.draw.rect(screen, (159, 159, 159), self.zone_main)
 
         main = joueur_actif.get_main()
         cartes = main.get_cartes()
@@ -289,23 +307,23 @@ class Rendu:
             # Fallback: formes géométriques si pas de sprite
             # Couleur selon l'équipe
             if entite.get_equipe() == 1:
-                couleur = CLR_EQ_1
+                couleur = CLR_EQ_1[0]
             elif entite.get_equipe() == 2:
-                couleur = CLR_EQ_2
+                couleur = CLR_EQ_2[0]
             elif entite.get_equipe() == 3:
-                couleur = CLR_EQ_3
+                couleur = CLR_EQ_3[0]
             elif entite.get_equipe() == 4:
-                couleur = CLR_EQ_4
+                couleur = CLR_EQ_4[0]
             elif entite.get_equipe() == 5:
-                couleur = CLR_EQ_5
+                couleur = CLR_EQ_5[0]
             elif entite.get_equipe() == 6:
-                couleur = CLR_EQ_6
+                couleur = CLR_EQ_6[0]
             elif entite.get_equipe() == 7:
-                couleur = CLR_EQ_7
+                couleur = CLR_EQ_7[0]
             elif entite.get_equipe() == 8:
-                couleur = CLR_EQ_8
+                couleur = CLR_EQ_8[0]
             else:
-                couleur = CLR_EQ_DEF
+                couleur = CLR_EQ_0[0]
 
             rayon = taille_hex * 0.4  # Taille de la forme
 
@@ -344,14 +362,28 @@ class Rendu:
             if not entite_selectionnee or entite.get_pos() != entite_selectionnee.get_pos():
                 self._blitter_overlay(screen, self._overlay_attaque_pour(entite), pos_ecran, taille_hex)
 
+    def dessiner_info_globales(self, screen, jeu):
+        """ Affiche : Mode de jeu / Niveau / Objectif de cases / Nbr de joueurs et joueurs en vie """
+        # Fond de la zone
+        pygame.draw.rect(screen, (37, 37, 37), self.zone_info)
+
+        # Mode de jeu
+        texte_mode = self.font.render(
+            f"Mode: {jeu.get_mode_de_jeu()}", True, (255, 255, 255))
+        screen.blit(texte_mode, (self.zone_info.x +
+                    10, self.zone_info.y + 10))
+
+        # Objectif de cases
+        texte_objectif = self.font.render(
+            f"Objectif: {jeu.get_ratio_cases()*100:.0f}% cases", True, (255, 255, 255))
+        screen.blit(texte_objectif, (self.zone_info.x +
+                    10, self.zone_info.y + 40))
+
     def dessiner_info_entite(self, screen, entite):
         """ Affiche les informations de l'entité sélectionnée """
         # TODO: Améliorer l'affichage des infos
         # Fond de la zone
-        pygame.draw.rect(screen, (60, 60, 70), self.zone_info)
-
-        if not entite:
-            return
+        pygame.draw.rect(screen, (37, 37, 37), self.zone_info)
 
         # Titre
         texte_titre = self.font.render(
@@ -520,9 +552,12 @@ class Rendu:
                         screen.blit(fg_redim, fg_redim.get_rect(center=pos_ecran))
 
         self.dessiner_entete(screen, jeu)
-        self.dessiner_info_entite(screen, entite_selectionnee)
+        if entite_selectionnee:
+            self.dessiner_info_entite(screen, entite_selectionnee)
+        else:
+            self.dessiner_info_globales(screen, jeu)
         self.dessiner_main(screen, jeu.get_joueur_actif(), carte_selectionnee)
-        self.dessiner_bouton_fin_tour(screen)
+        self.dessiner_bouton_fin_tour(jeu.get_joueur_actif(), screen)
 
     @staticmethod
     def dessiner_ecran_victoire(screen, joueur_gagnant):

@@ -8,10 +8,12 @@ from src.const import PI_TOUR
 class Classique:
     """ Mode de jeu classique (ratio de cases ou tuer les bâtiments et créatures adverses) """
 
-    def __init__(self, joueurs: list[Joueur], terrain: Terrain, ratio_cases: float = 4/5):
+    def __init__(self, joueurs: list[Joueur], terrain: Terrain, ratio_cases: float = 4/5, niveau: str = "", mode_de_jeu: str = "classique"):
         self.joueurs = joueurs
         self.terrain = terrain
         self.ratio_cases = ratio_cases
+        self.niveau = niveau
+        self.mode_de_jeu = mode_de_jeu
         self.joueur_actif = choice(self.joueurs)
 
         # Créer le dictionnaire joueurs par équipe pour le terrain
@@ -37,6 +39,14 @@ class Classique:
     def get_joueur_actif(self) -> Joueur:
         """ Renvoie le joueur actif """
         return self.joueur_actif
+
+    def get_mode_de_jeu(self) -> str:
+        """ Renvoie le mode de jeu """
+        return self.mode_de_jeu
+
+    def get_niveau(self) -> str:
+        """ Renvoie le niveau de jeu """
+        return self.niveau
 
     def set_joueur_actif(self, joueur: Joueur):
         """ Change le joueur actif """

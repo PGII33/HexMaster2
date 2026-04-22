@@ -89,7 +89,7 @@ def creer_playground()-> Classique:
         j3.get_main().ajouter_carte(j3.get_deck().piocher())
         j4.get_main().ajouter_carte(j4.get_deck().piocher())
 
-    return Classique([j1, j2, j3, j4], terrain_playground)
+    return Classique([j1, j2, j3, j4], terrain_playground, mode_de_jeu="Classique", niveau="Playground")
 
 if __name__ == '__main__':
     from src.app.application import Application

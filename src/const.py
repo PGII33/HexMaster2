@@ -3,7 +3,6 @@
 # Affichage
 # CLR = couleur
 CLR_FOND_TERRAIN = (245, 245, 245)
-CLR_FOND_MAIN = (40, 40, 50)
 
 CLR_CARTE_FOND = (200, 200, 200) # Quand pas de carte en image
 CLR_CARTE_TEXTE = (150, 150, 150) # Quand pas de carte en image
@@ -14,15 +13,19 @@ CLR_BTN_FIN_TOUR_CONTOUR = (50, 100, 150)
 CLR_BTN_FIN_TOUR_TEXTE = (255, 255, 255)
 
 # CLR des équipes
-CLR_EQ_1 = (52, 225, 255)
-CLR_EQ_2 = (141, 255, 107)
-CLR_EQ_3 = (255, 107, 141)
-CLR_EQ_4 = (255, 255, 107)
-CLR_EQ_5 = (255, 255, 107)
-CLR_EQ_6 = (255, 255, 107)
-CLR_EQ_7 = (255, 255, 107)
-CLR_EQ_8 = (255, 255, 107)
-CLR_EQ_DEF = (200, 200, 200)
+
+# CLR des équipes avec leurs 4 variantes
+CLR_EQ_1 = [(224, 108, 108), (64, 20, 20), (179, 54, 54)]
+CLR_EQ_2 = [(109, 142, 209), (24, 37, 61), (40, 91, 184)]
+CLR_EQ_3 = [(255, 236, 133), (61, 56, 30)]
+CLR_EQ_4 = [(255, 255, 107)]
+CLR_EQ_5 = [(255, 255, 107)]
+CLR_EQ_6 = [(255, 255, 107)]
+CLR_EQ_7 = [(255, 255, 107)]
+CLR_EQ_8 = [(255, 255, 107)]
+CLR_EQ_0 = [(200, 200, 200)]
+
+CLR_BLANC = (255, 255, 255)
 
 CLR_ENTITE_SELECTIONNEE = (255, 215, 0)
 

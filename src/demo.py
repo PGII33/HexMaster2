@@ -69,7 +69,7 @@ def creer_demo()-> Classique:
         j1.get_main().ajouter_carte(j1.get_deck().piocher())
         j2.get_main().ajouter_carte(j2.get_deck().piocher())
 
-    return Classique([j1, j2], terrain_demo)
+    return Classique([j1, j2], terrain_demo, mode_de_jeu="Classique", niveau="Demo")
 
 if __name__ == '__main__':
     from src.app.application import Application
