@@ -1,14 +1,14 @@
-""" Fichier de gestion des tags actifs """
+""" Fichier de gestion des statuts actifs """
 
 from src.phase import PhaseTour
 
 
-class TagActif:
-    """ Représente un tag persistant appliqué à une entité """
+class StatutActif:
+    """ Représente un statut persistant appliqué à une entité """
 
     def __init__(self, nom: str, duree: int, phase: PhaseTour = PhaseTour.FIN_TOUR,
                  modificateurs: dict[str, int] = None, nom_effet: str = None):
-        """ Initialise un tag actif """
+        """ Initialise un statut actif """
         self.nom = nom
         self.duree_restante = duree
         self.phase = phase
@@ -16,7 +16,7 @@ class TagActif:
         self.nom_effet = nom_effet
 
     def get_nom(self):
-        """ Retourne le nom du tag """
+        """ Retourne le nom du statut """
         return self.nom
 
     def get_duree_restante(self):
@@ -24,12 +24,12 @@ class TagActif:
         return self.duree_restante
 
     def set_duree_restante(self, duree: int):
-        """ Modifie la durée restante du tag """
+        """ Modifie la durée restante du statut """
         self.duree_restante = duree
 
     def rafraichir(self, duree: int = None, modificateurs: dict[str, int] = None,
                    phase: PhaseTour = None, nom_effet: str = None):
-        """ Rafraîchit les données du tag lors d'une réapplication """
+        """ Rafraîchit les données du statut lors d'une réapplication """
         if duree is not None:
             self.duree_restante = duree
         if modificateurs is not None:
@@ -45,15 +45,15 @@ class TagActif:
             self.duree_restante -= 1
 
     def est_expire(self):
-        """ Retourne vrai si le tag est expiré """
+        """ Retourne vrai si le statut est expiré """
         return self.duree_restante == 0
 
     def get_phase(self):
-        """ Retourne la phase d'activation du tag """
+        """ Retourne la phase d'activation du statut """
         return self.phase
 
     def get_nom_effet(self):
-        """ Retourne le nom de l'effet à résoudre pour ce tag """
+        """ Retourne le nom de l'effet à résoudre pour ce statut """
         if self.nom_effet is not None:
             return self.nom_effet
         return self.nom.lower().replace(" ", "_")
@@ -63,5 +63,5 @@ class TagActif:
         return self.modificateurs.get(statistique, 0)
 
     def get_modificateurs(self):
-        """ Retourne tous les modificateurs du tag """
+        """ Retourne tous les modificateurs du statut """
         return dict(self.modificateurs)

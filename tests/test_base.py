@@ -7,7 +7,7 @@ import unittest
 from src.base import Base
 from src.competences import Competence
 from src.phase import PhaseTour
-from src.tags import TagActif
+from src.statut import StatutActif
 from tests.utils import generate_random_string, MIN_INT, MAX_INT, BOUCLE_TEST, TAILLE_STR
 
 
@@ -118,23 +118,23 @@ class TestBase(unittest.TestCase):
             base.retirer_competence(comp)
             self.assertNotIn(comp, base.get_comp())
 
-    def test_ajouter_tag_rafraichit_existant(self):
+    def test_ajouter_statut_rafraichit_existant(self):
         base = Base(nom="", pos=(0, 0), cout=0, equipe=0, comp=[])
 
-        base.ajouter_tag(TagActif("Mouille", 1, modificateurs={"mouv_max": -1}))
-        base.ajouter_tag(TagActif("Mouille", 3, modificateurs={"mouv_max": -1}))
+        base.ajouter_statut(StatutActif("Mouille", 1, modificateurs={"mouv_max": -1}))
+        base.ajouter_statut(StatutActif("Mouille", 3, modificateurs={"mouv_max": -1}))
 
-        self.assertEqual(len(base.get_tags()), 1)
-        self.assertEqual(base.get_tag("mouille").get_duree_restante(), 3)
+        self.assertEqual(len(base.get_statuts()), 1)
+        self.assertEqual(base.get_statut("mouille").get_duree_restante(), 3)
 
-    def test_retirer_tag(self):
+    def test_retirer_statut(self):
         base = Base(nom="", pos=(0, 0), cout=0, equipe=0, comp=[])
 
-        base.ajouter_tag(TagActif("Mouille", 3, modificateurs={"mouv_max": -1}))
-        base.retirer_tag("Mouille")
+        base.ajouter_statut(StatutActif("Mouille", 3, modificateurs={"mouv_max": -1}))
+        base.retirer_statut("Mouille")
 
-        self.assertIsNone(base.get_tag("Mouille"))
-        self.assertEqual(base.get_tags(), [])
+        self.assertIsNone(base.get_statut("Mouille"))
+        self.assertEqual(base.get_statuts(), [])
 
 
     def test_get_carte_path(self):

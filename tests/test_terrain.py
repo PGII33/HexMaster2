@@ -87,19 +87,19 @@ class TestTerrain(unittest.TestCase):
                     control=0, control_max=10, comp=[])
         creature = Creature(pv=10, nom="creature", pos=(0, 0), cout=0, equipe=1, portee=0,
                             control=0, comp=[], combat=0, demolition=0, degradation=0, mouv=2)
-        creature.ajouter_tag(Effet.creer_tag_mouille())
+        creature.ajouter_statut(Effet.creer_statut_mouille())
 
         terrain = Terrain(entites=[case, creature])
 
         terrain.fin_tour(1)
-        self.assertEqual(creature.get_tag("Mouille").get_duree_restante(), 2)
+        self.assertEqual(creature.get_statut("Mouille").get_duree_restante(), 2)
         self.assertEqual(creature.get_mouv_max(), 1)
 
         terrain.fin_tour(1)
-        self.assertEqual(creature.get_tag("Mouille").get_duree_restante(), 1)
+        self.assertEqual(creature.get_statut("Mouille").get_duree_restante(), 1)
 
         terrain.fin_tour(1)
-        self.assertIsNone(creature.get_tag("Mouille"))
+        self.assertIsNone(creature.get_statut("Mouille"))
         self.assertEqual(creature.get_mouv_max(), 2)
         self.assertEqual(creature.get_mouv(), 2)
 
@@ -129,7 +129,7 @@ class TestTerrain(unittest.TestCase):
 
         Effet.pluie(sort, entites, case_centre)
 
-        self.assertIsNotNone(creature_centre.get_tag("Mouille"))
-        self.assertIsNotNone(creature_adjacente.get_tag("Mouille"))
-        self.assertIsNone(creature_exterieure.get_tag("Mouille"))
-        self.assertEqual(creature_centre.get_tag("Mouille").get_duree_restante(), 3)
+        self.assertIsNotNone(creature_centre.get_statut("Mouille"))
+        self.assertIsNotNone(creature_adjacente.get_statut("Mouille"))
+        self.assertIsNone(creature_exterieure.get_statut("Mouille"))
+        self.assertEqual(creature_centre.get_statut("Mouille").get_duree_restante(), 3)

@@ -57,8 +57,8 @@ class Terrain:
                     if comp.get_phase() == PhaseTour.FIN_TOUR:
                         comp.appliquer_effet(entite, self.entites, None, self.joueurs)
 
-                entite.resoudre_tags(PhaseTour.FIN_TOUR, self.entites, self.joueurs)
-                entite.decrementer_tags(PhaseTour.FIN_TOUR)
+                entite.appliquer_statuts(PhaseTour.FIN_TOUR, self.entites, self.joueurs)
+                entite.decrementer_statuts(PhaseTour.FIN_TOUR)
 
         # Nettoyer les entités mortes
         self.nettoyer_entites_mortes()

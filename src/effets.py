@@ -2,7 +2,7 @@
 
 from src.const import DGTS_PIQUANT, DGTS_INSTABLE, ABATTAGE_PI, CONFORT_PI, MOUILLE_DUREE
 from src.auxiliaire import adjacents_hex
-from src.tags import TagActif
+from src.statut import StatutActif
 #pylint: disable=unused-argument
 
 def damage(cible, montant):
@@ -32,9 +32,9 @@ class Effet:
     """ Les effets - Méthodes statiques uniquement """
 
     @staticmethod
-    def creer_tag_mouille():
-        """ Crée une instance du tag Mouille """
-        return TagActif(
+    def creer_statut_mouille():
+        """ Crée une instance du statut Mouille """
+        return StatutActif(
             nom="Mouille",
             duree=MOUILLE_DUREE,
             modificateurs={"mouv_max": -1}
@@ -142,7 +142,7 @@ class Effet:
 
     @staticmethod
     def pluie(origine, toutes_entitees, cible, joueurs=None):
-        """ Applique le tag Mouille sur la case ciblée et les hexagones adjacents """
+        """ Applique le statut Mouille sur la case ciblée et les hexagones adjacents """
         if cible is None:
             return
 
@@ -151,4 +151,4 @@ class Effet:
 
         for entite in toutes_entitees:
             if entite.est_creature() and entite.get_pos() in positions_affectees:
-                entite.ajouter_tag(Effet.creer_tag_mouille())
+                entite.ajouter_statut(Effet.creer_statut_mouille())

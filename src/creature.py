@@ -18,7 +18,7 @@ class Creature(Unite):
                          control=control, portee=portee, comp=comp, sprite_path=sprite_path,
                          carte_path=carte_path)
         self.mouv = mouv  # Points de mouvements
-        self.mouv_base_max = mouv  # Mouvement maximum sans tags
+        self.mouv_base_max = mouv  # Mouvement maximum
         self.mouv_max = mouv  # Points de mouvements maximum
         self.mal_invocation = False  # True si vient d'être invoqué
 
@@ -58,10 +58,10 @@ class Creature(Unite):
         self.mal_invocation = False  # Retire le mal d'invocation
 
     @override
-    def recalculer_stats_depuis_tags(self):
-        """ Recalcule les statistiques dérivées depuis les tags actifs """
+    def recalculer_stats_depuis_statuts(self):
+        """ Recalcule les statistiques dérivées depuis les statuts actifs """
         ancien_mouv_max = self.mouv_max
-        self.mouv_max = max(0, self.mouv_base_max + self.get_modificateur_tag("mouv_max"))
+        self.mouv_max = max(0, self.mouv_base_max + self.get_modificateur_statut("mouv_max"))
         if self.mouv > self.mouv_max:
             self.mouv = self.mouv_max
         elif self.mouv == ancien_mouv_max and self.mouv_max > ancien_mouv_max:

@@ -103,7 +103,7 @@ class TestCreature(unittest.TestCase):
                             combat=0, demolition=0, degradation=0, portee=0,
                             control=0, mouv=2)
 
-        creature.ajouter_tag(Effet.creer_tag_mouille())
+        creature.ajouter_statut(Effet.creer_statut_mouille())
 
         self.assertEqual(creature.get_mouv_max(), 1)
         self.assertEqual(creature.get_mouv(), 1)
@@ -113,8 +113,8 @@ class TestCreature(unittest.TestCase):
                             combat=0, demolition=0, degradation=0, portee=0,
                             control=0, mouv=2)
 
-        creature.ajouter_tag(Effet.creer_tag_mouille())
-        creature.retirer_tag("Mouille")
+        creature.ajouter_statut(Effet.creer_statut_mouille())
+        creature.retirer_statut("Mouille")
 
         self.assertEqual(creature.get_mouv_max(), 2)
         self.assertEqual(creature.get_mouv(), 2)

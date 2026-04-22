@@ -58,5 +58,5 @@ DGTS_INSTABLE = 2
 ABATTAGE_PI = 3
 CONFORT_PI = 1
 
-# Durée des tags
+# Durée des statuts
 MOUILLE_DUREE = 3

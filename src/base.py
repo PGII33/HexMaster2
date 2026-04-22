@@ -13,7 +13,7 @@ class Base:
         self.cout = cout
         self.equipe = equipe
         self.comp = comp if comp is not None else []
-        self.tags_actifs = []
+        self.statuts_actif = []
         self.sprite_path = sprite_path
         self.carte_path = carte_path
 
@@ -74,49 +74,49 @@ class Base:
         if comp in self.comp:
             self.comp.remove(comp)
 
-    def get_tags(self):
-        """ Retourne les tags actifs de l'entité """
-        return self.tags_actifs
+    def get_statuts(self):
+        """ Retourne les statuts actifs de l'entité """
+        return self.statuts_actif
 
-    def get_tag(self, nom: str):
-        """ Retourne le tag actif portant un nom donné """
+    def get_statut(self, nom: str):
+        """ Retourne le statut actif portant un nom donné """
         nom_normalise = nom.lower()
-        for tag in self.tags_actifs:
-            if tag.get_nom().lower() == nom_normalise:
-                return tag
+        for statut in self.statuts_actif:
+            if statut.get_nom().lower() == nom_normalise:
+                return statut
         return None
 
-    def ajouter_tag(self, tag):
-        """ Ajoute un tag actif ou rafraîchit un tag existant """
-        tag_existant = self.get_tag(tag.get_nom())
-        if tag_existant is not None:
-            tag_existant.rafraichir(
-                duree=tag.get_duree_restante(),
-                modificateurs=tag.get_modificateurs(),
-                phase=tag.get_phase(),
-                nom_effet=tag.get_nom_effet()
+    def ajouter_statut(self, statut):
+        """ Ajoute un statut actif ou rafraîchit un statut existant """
+        statut_existant = self.get_statut(statut.get_nom())
+        if statut_existant is not None:
+            statut_existant.rafraichir(
+                duree=statut.get_duree_restante(),
+                modificateurs=statut.get_modificateurs(),
+                phase=statut.get_phase(),
+                nom_effet=statut.get_nom_effet()
             )
         else:
-            self.tags_actifs.append(tag)
+            self.statuts_actif.append(statut)
 
-        self.recalculer_stats_depuis_tags()
+        self.recalculer_stats_depuis_statuts()
 
-    def retirer_tag(self, nom: str):
-        """ Retire un tag actif par son nom """
-        tag = self.get_tag(nom)
-        if tag is not None:
-            self.tags_actifs.remove(tag)
-            self.recalculer_stats_depuis_tags()
+    def retirer_statut(self, nom: str):
+        """ Retire un statut actif par son nom """
+        statut = self.get_statut(nom)
+        if statut is not None:
+            self.statuts_actif.remove(statut)
+            self.recalculer_stats_depuis_statuts()
 
-    def resoudre_tags(self, phase, toutes_entitees, joueurs=None):
-        """ Déclenche les effets des tags correspondant à une phase """
+    def appliquer_statuts(self, phase, toutes_entitees, joueurs=None):
+        """ Déclenche les effets des statuts correspondant à une phase """
         from src.effets import Effet  # pylint: disable=import-outside-toplevel
 
-        for tag in list(self.tags_actifs):
-            if tag.get_phase() != phase:
+        for statut in list(self.statuts_actif):
+            if statut.get_phase() != phase:
                 continue
 
-            nom_effet = tag.get_nom_effet()
+            nom_effet = statut.get_nom_effet()
             if nom_effet is None or not hasattr(Effet, nom_effet):
                 continue
 
@@ -126,27 +126,27 @@ class Base:
             else:
                 methode(self, toutes_entitees)
 
-    def decrementer_tags(self, phase):
-        """ Décrémente et purge les tags d'une phase donnée """
-        tags_expire = []
-        for tag in self.tags_actifs:
-            if tag.get_phase() != phase:
+    def decrementer_statuts(self, phase):
+        """ Décrémente et purge les statuts d'une phase donnée """
+        statuts_expire = []
+        for statut in self.statuts_actif:
+            if statut.get_phase() != phase:
                 continue
-            tag.decrementer()
-            if tag.est_expire():
-                tags_expire.append(tag)
+            statut.decrementer()
+            if statut.est_expire():
+                statuts_expire.append(statut)
 
-        for tag in tags_expire:
-            self.tags_actifs.remove(tag)
+        for statut in statuts_expire:
+            self.statuts_actif.remove(statut)
 
-        if tags_expire:
-            self.recalculer_stats_depuis_tags()
+        if statuts_expire:
+            self.recalculer_stats_depuis_statuts()
 
-    def get_modificateur_tag(self, statistique: str):
-        """ Somme les modificateurs d'une statistique sur tous les tags actifs """
-        return sum(tag.get_modificateur(statistique) for tag in self.tags_actifs)
+    def get_modificateur_statut(self, statistique: str):
+        """ Somme les modificateurs d'une statistique sur tous les statuts actifs """
+        return sum(statut.get_modificateur(statistique) for statut in self.statuts_actif)
 
-    def recalculer_stats_depuis_tags(self):
+    def recalculer_stats_depuis_statuts(self):
         """ Point d'extension pour recalculer les stats dérivées """
 
 # Getters particuliers
