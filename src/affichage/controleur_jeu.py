@@ -85,11 +85,19 @@ class ControleurJeu:
         # Un seul point d'entrée pour garder les overlays cohérents.
         self._recalculer_overlays()
 
+    def fin_de_tour_equipe_0(self):
+        """Fin de tour spécifique pour l'équipe 0, utilisée pour activer les effets sur les entités neutre (équipe 0)."""
+        print("Fin de tour équipe 0 - activation des effets sur les entités neutres")# Fin de tour du joueur actuel
+        self.jeu.get_terrain().debut_tour(0)
+        self.jeu.get_terrain().fin_tour(0)
+
     def fin_de_tour(self):
         """Passe au joueur suivant et gère la transition."""
         joueurs = self.jeu.get_joueurs()
         joueur_actuel = self.jeu.get_joueur_actif()
         index_actuel = joueurs.index(joueur_actuel)
+        if index_actuel == len(joueurs) - 1:
+            self.fin_de_tour_equipe_0()
         prochain_index = (index_actuel + 1) % len(joueurs)
 
         # Fin de tour du joueur actuel
@@ -99,7 +107,6 @@ class ControleurJeu:
         joueur_suivant = joueurs[prochain_index]
         self.jeu.set_joueur_actif(joueur_suivant)
         self.jeu.get_terrain().debut_tour(joueur_suivant.get_equipe())
-
         # Ajouter les PI au joueur
         joueur_suivant.set_pi(joueur_suivant.get_pi() + PI_TOUR)
 
