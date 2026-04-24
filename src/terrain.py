@@ -44,14 +44,16 @@ class Terrain:
 
         for entite in self.entites:
             if entite.get_equipe() == joueur_actif:
-                if entite.est_creature() :
-                    entite.fin_tour()
-
                 # Si c'est une créature ou un bâtiment, appliquer le contrôle
                 if entite.est_creature() or entite.est_batiment():
                     case = self.get_case_at(entite.get_pos())
                     case.appliquer_control(
                         entite.get_control(), entite.get_equipe())
+
+        for entite in self.entites:
+            if entite.get_equipe() == joueur_actif:
+                if entite.est_creature() :
+                    entite.fin_tour()
 
                 for comp in entite.get_comp():
                     if comp.get_phase() == PhaseTour.FIN_TOUR:
