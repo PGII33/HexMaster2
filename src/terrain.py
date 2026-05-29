@@ -24,6 +24,8 @@ class Terrain:
     def debut_tour(self, joueur_actif: int):
         """ Gère le début du tour pour les entites du terrain """
 
+        self.tuer_entite_sans_case()
+
         for entite in self.entites:
             if entite.get_equipe() == joueur_actif:
                 if entite.est_creature():
@@ -41,6 +43,8 @@ class Terrain:
 
     def fin_tour(self, joueur_actif: int):
         """ Gère la fin du tour pour les entites du terrain """
+
+        self.tuer_entite_sans_case()
 
         for entite in self.entites:
             if entite.get_equipe() == joueur_actif:
@@ -64,6 +68,13 @@ class Terrain:
 
         # Nettoyer les entités mortes
         self.nettoyer_entites_mortes()
+
+    def tuer_entite_sans_case(self):
+        """ Tue les entités qui ne sont pas sur des cases (sauf pour les cases) """
+        for e in self.entites:
+            if self.get_case_at(e.get_pos()) is None and not e.est_case():
+                e.set_pv(0)
+
 
     def nettoyer_entites_mortes(self):
         """ Retire les entités mortes du terrain (PV <= 0) 
