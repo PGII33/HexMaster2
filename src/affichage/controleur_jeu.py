@@ -40,6 +40,7 @@ class ControleurJeu:
             cible = self._chercher_entite_at(coord_hex, self.entites_a_portee)
             if cible:
                 self._attaquer_cible(cible)
+                self.jeu.get_terrain().tuer_entite_sans_case()
                 return
 
         # Sinon, sélectionner l'entité/case cliquée
