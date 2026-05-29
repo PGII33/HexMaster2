@@ -1,0 +1,19 @@
+{
+  "id": "carre",
+  "nom": "Carre",
+  "type": "batiment",
+  "sprite": "mods/debug/assets/sprites/batiments/carre.png",
+  "carte": "mods/debug/assets/cartes/batiments/carre.png",
+  
+  "stats": {
+    "pv": 4,
+    "cout": 1,
+    "combat": 0,
+    "demolition": 0,
+    "degradation": 0,
+    "portee": 0,
+    "control": 2
+  },
+  
+  "description": "Un carré, un batiment particulièrement ... intéressant."
+}

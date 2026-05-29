@@ -13,7 +13,7 @@
     "degradation": 0,
     "portee": 1,  
     "mouvement": 2,
-    "control": 1
+    "control": 0
   },
   
   "description": "Ce pauvre fermier va devoir se battre..."
