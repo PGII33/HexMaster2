@@ -29,12 +29,4 @@ class Competence:
             cible: Cible de l'effet (optionnel)
             joueurs: Dictionnaire {numero_equipe: objet_joueur} (optionnel)
         """
-        if hasattr(Effet, self.nom_effet):
-            methode = getattr(Effet, self.nom_effet)
-
-            if joueurs is not None:
-                methode(origine, toutes_entitees, cible, joueurs)
-            elif cible is not None:
-                methode(origine, toutes_entitees, cible)
-            else:
-                methode(origine, toutes_entitees)
+        Effet.appliquer_nom(self.nom_effet, origine, toutes_entitees, cible, joueurs)

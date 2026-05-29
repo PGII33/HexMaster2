@@ -1,0 +1,19 @@
+{
+  "id": "abattage",
+  "phase": "APRES_ATTAQUE",
+  "effets": [
+    {
+      "base": "transformer",
+      "params": {
+        "entite1": "Foret",
+        "entite2": "Plaine"
+      }
+    },
+    {
+      "base": "ajouter_pi_origine",
+      "params": {
+        "montant": 2
+      }
+    }
+  ]
+}
