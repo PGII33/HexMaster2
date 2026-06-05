@@ -1,0 +1,13 @@
+{
+  "id": "instable",
+  "phase": "FIN_TOUR",
+  "effets": [
+    {
+      "base": "degats_sur_meme_case",
+      "params": {
+        "cible_type": "batiment",
+        "montant":2
+      }
+    }
+  ]
+}

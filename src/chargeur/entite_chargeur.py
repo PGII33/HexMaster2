@@ -8,16 +8,21 @@ from src.sort import Sort
 from src.competences import Competence
 from src.phase import PhaseTour
 from src.tag import Tag
+from src.chargeur.effet_chargeur import EffetChargeur
+from src.effets import Effet
 
 
 class EntiteChargeur:
     """ Chargeur d'entites depuis des fichiers JSON """
 
-    def __init__(self, chemin_data="data/entites", chemin_mods="mods"):
+    def __init__(self, chemin_data="data/entites", chemin_mods="mods", chemin_effets_data="data/effets"):
         self.chemin_data = chemin_data
         self.chemin_mods = chemin_mods
         self.entites_chargees = {}
         self.mods_actifs = self.charger_mods_actifs()
+        self.effet_chargeur = EffetChargeur(chemin_data=chemin_effets_data, chemin_mods=chemin_mods)
+        self.effet_chargeur.charger_tous_les_effets()
+        Effet.enregistrer_effets_custom(self.effet_chargeur.effets_chargees)
 
     def charger_mods_actifs(self):
         """Retourne les dossiers de premier niveau présents dans le dossier des mods."""
@@ -78,8 +83,7 @@ class EntiteChargeur:
         else:
             raise ValueError(f"Type d'entité inconnu: {definition['type']}")
 
-    @staticmethod
-    def charger_competences(definition):
+    def charger_competences(self, definition):
         """ Charge les compétences depuis la définition JSON
 
         Args:
@@ -95,10 +99,16 @@ class EntiteChargeur:
 
         for comp_def in definition["competences"]:
             nom_comp = comp_def.get("nom")
-            phase_str = comp_def.get("phase", "FIN_TOUR")
+            phase_str = comp_def.get("phase")
 
-            # Convertir le nom de phase en enum
-            phase = getattr(PhaseTour, phase_str, PhaseTour.FIN_TOUR)
+            if phase_str is None and nom_comp is not None:
+                phase_effet = self.effet_chargeur.get_phase_effet(nom_comp)
+                if phase_effet is not None:
+                    phase = phase_effet
+                else:
+                    phase = PhaseTour.FIN_TOUR
+            else:
+                phase = getattr(PhaseTour, phase_str, PhaseTour.FIN_TOUR)
 
             # Créer la compétence
             competence = Competence(

@@ -1,0 +1,13 @@
+{
+  "id": "piquant",
+  "phase": "FIN_TOUR",
+  "effets": [
+    {
+      "base": "degats_sur_meme_case",
+      "params": {
+        "cible_type": "creature",
+        "montant":2
+      }
+    }
+  ]
+}
