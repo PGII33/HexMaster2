@@ -1,0 +1,12 @@
+{
+  "id": "confort",
+  "phase": "FIN_TOUR",
+  "effets": [
+    {
+      "base": "ajouter_pi_origine",
+      "params": {
+        "montant":2
+      }
+    }
+  ]
+}
