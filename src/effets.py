@@ -1,6 +1,5 @@
 """ Fichier de gestion des effets """
 
-from src.const import ABATTAGE_PI, CONFORT_PI, MOUILLE_DUREE
 from src.auxiliaire import adjacents_hex
 from src.statut import StatutActif
 #pylint: disable=unused-argument
@@ -46,10 +45,22 @@ class Effet:
 
         if nom_effet in Effet._effets_custom:
             definition = Effet._effets_custom[nom_effet]
+            contexte = {}  # Contexte pour sauvegarder les résultats des effets
             for etape in definition.get("effets", []):
                 base = etape.get("base")
                 params = etape.get("params", {})
-                Effet.appliquer_base(base, origine, toutes_entitees, cible, joueurs, params)
+                condition = etape.get("condition")
+                
+                # Vérifier la condition si elle existe
+                if condition and not Effet._evaluer_condition(condition, contexte):
+                    continue
+                
+                resultat = Effet.appliquer_base(base, origine, toutes_entitees, cible, joueurs, params)
+                
+                # Sauvegarder le résultat si demandé
+                save_result = etape.get("save_result")
+                if save_result:
+                    contexte[save_result] = resultat
             return
         else:
             raise ValueError(f"Effet inconnu: {nom_effet}")
@@ -64,19 +75,19 @@ class Effet:
                 montant = int(params.get("montant", 0))
                 cible_type = params.get("cible", "")
                 Effet.degats_sur_meme_case(origine, toutes_entitees, montant, cible_type)
-                return
+                return True
 
             case "ajouter_pi_origine":
                 montant = int(params.get("montant", 0))
                 ajouter_pi(joueurs, origine.get_equipe(), montant)
-                return
+                return True
 
             case "transformer":
                 cible_type = params.get("cible_type", "")
                 entite1 = params.get("entite1", "")
                 entite2 = params.get("entite2")
-                Effet.transformer(origine, toutes_entitees, cible_type, cible, entite1, entite2)
-                return
+                resultat = Effet.transformer(origine, toutes_entitees, cible_type, cible, entite1, entite2)
+                return resultat
 
             case _:
                 raise ValueError(f"Effet de base inconnu: {base}")
@@ -100,7 +111,7 @@ class Effet:
             damage(entite, montant)
 
     def transformer(origine, toutes_entitees, cible_type, cible, entite1, entite2):
-        "Transforme les cibles_type ou entite1 en entite2"
+        "Transforme les cibles_type ou entite1 en entite2. Retourne True si transformation réussie."
         for entite in toutes_entitees:
             if entite.get_pos() != cible.get_pos():
                 continue
@@ -126,7 +137,41 @@ class Effet:
                 print("Transformer", entite.get_nom(), "en", nouvelle_entite.get_nom())
                 toutes_entitees.append(nouvelle_entite)
                 entite.set_pv(0)
-                return
+                return True
+        return False
+
+    @staticmethod
+    def _evaluer_condition(condition, contexte):
+        """Évalue une condition simple basée sur le contexte.
+        
+        Formats supportés:
+        - "nom_var == true" ou "nom_var == false"
+        - "nom_var" (équivalent à "nom_var == true")
+        """
+        if not condition or not isinstance(condition, str):
+            return True
+        
+        condition = condition.strip()
+        
+        # Format "var == true/false"
+        if "==" in condition:
+            parts = condition.split("==")
+            if len(parts) == 2:
+                var_name = parts[0].strip()
+                expected = parts[1].strip().lower()
+                actual = contexte.get(var_name, False)
+                
+                if expected == "true":
+                    return actual is True
+                elif expected == "false":
+                    return actual is False
+        
+        # Format "var" (assume true)
+        else:
+            var_name = condition.strip()
+            return contexte.get(var_name, False) is True
+        
+        return False
 
     @staticmethod
     def creer_statut_mouille():
