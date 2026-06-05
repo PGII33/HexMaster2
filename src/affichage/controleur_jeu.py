@@ -88,7 +88,6 @@ class ControleurJeu:
 
     def fin_de_tour_equipe_0(self):
         """Fin de tour spécifique pour l'équipe 0, utilisée pour activer les effets sur les entités neutre (équipe 0)."""
-        print("Fin de tour équipe 0 - activation des effets sur les entités neutres")# Fin de tour du joueur actuel
         self.jeu.get_terrain().debut_tour(0)
         self.jeu.get_terrain().fin_tour(0)
 
