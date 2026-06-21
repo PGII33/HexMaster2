@@ -1,0 +1,12 @@
+{
+  "id": "pluie",
+  "phase": "ACTIF",
+  "effets": [
+    {
+      "base": "donner_statut",
+      "params": {
+        "statut": "mouille"
+      }
+    }
+  ]
+}

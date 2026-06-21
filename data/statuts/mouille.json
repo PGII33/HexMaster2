@@ -1,0 +1,13 @@
+{
+  "id": "mouille",
+  "duree": 3,
+  "effets": [
+    {
+      "base": "modif_mouvement",
+      "params": {
+        "montant": -1,
+        "est_buff": false
+      }
+    }
+  ]
+}
