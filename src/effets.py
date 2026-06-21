@@ -1,7 +1,7 @@
 """ Fichier de gestion des effets """
-
+from __future__ import annotations
+from src.const import MOUILLE_DUREE
 from src.auxiliaire import adjacents_hex
-from src.statut import StatutActif
 #pylint: disable=unused-argument
 
 def damage(cible, montant):
@@ -41,7 +41,7 @@ class Effet:
 
     @staticmethod
     def appliquer_nom(nom_effet, origine, toutes_entitees, cible=None, joueurs=None):
-        """Applique un effet, natif ou composé depuis JSON."""
+        """Applique un effet composé depuis JSON."""
 
         if nom_effet in Effet._effets_custom:
             definition = Effet._effets_custom[nom_effet]
@@ -89,6 +89,11 @@ class Effet:
                 resultat = Effet.transformer(origine, toutes_entitees, cible_type, cible, entite1, entite2)
                 return resultat
 
+            case "donner_statut":
+                statut = params.get("statut", "")
+                Effet.donner_statut(origine, toutes_entitees, statut, cible)
+                return True
+
             case _:
                 raise ValueError(f"Effet de base inconnu: {base}")
 
@@ -110,6 +115,7 @@ class Effet:
                 continue
             damage(entite, montant)
 
+    @staticmethod
     def transformer(origine, toutes_entitees, cible_type, cible, entite1, entite2):
         "Transforme les cibles_type ou entite1 en entite2. Retourne True si transformation réussie."
         for entite in toutes_entitees:
@@ -139,6 +145,12 @@ class Effet:
                 entite.set_pv(0)
                 return True
         return False
+
+    @staticmethod
+    def donner_statut(origine, toute_entitees, statut, cible):
+        if statut == "mouille":
+            Effet.pluie(origine, toute_entitees, cible)
+        pass
 
     @staticmethod
     def _evaluer_condition(condition, contexte):

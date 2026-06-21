@@ -4,10 +4,10 @@ from src.phase import PhaseTour
 
 
 class StatutActif:
-    """ Représente un statut persistant appliqué à une entité """
+    """ Représente un statut appliqué à une entité """
 
     def __init__(self, nom: str, duree: int, phase: PhaseTour = PhaseTour.FIN_TOUR,
-                 modificateurs: dict[str, int] = None, nom_effet: str = None, est_buff:bool = False):
+                 modificateurs: dict[str, int]|None = None, nom_effet: str|None = None, est_buff:bool = False):
         """ Initialise un statut actif, par défaut, il est considéré comme debuff"""
         self.nom = nom
         self.duree_restante = duree
@@ -15,6 +15,8 @@ class StatutActif:
         self.modificateurs = dict(modificateurs) if modificateurs is not None else {}
         self.est_buff = est_buff
         self.nom_effet = nom_effet
+
+        _statuts_custom = {}
 
     def get_nom(self):
         """ Retourne le nom du statut """
@@ -36,8 +38,8 @@ class StatutActif:
         """ Modifie la durée restante du statut """
         self.duree_restante = duree
 
-    def rafraichir(self, duree: int = None, modificateurs: dict[str, int] = None,
-                   phase: PhaseTour = None, nom_effet: str = None):
+    def rafraichir(self, duree: int|None = None, modificateurs: dict[str, int]|None = None,
+                   phase: PhaseTour|None = None, nom_effet: str|None = None):
         """ Rafraîchit les données du statut lors d'une réapplication """
         if duree is not None:
             self.duree_restante = duree
@@ -74,3 +76,47 @@ class StatutActif:
     def get_modificateurs(self):
         """ Retourne tous les modificateurs du statut """
         return dict(self.modificateurs)
+
+# -------- Partie Construction des statuts -------- 
+
+    @staticmethod
+    def enregistrer_statuts_custom(statuts_definitions: dict):
+        """Enregistre les définitions de statuts JSON composés."""
+        StatutActif._statuts_custom = {
+            nom: definition for nom, definition in statuts_definitions.items()
+        }
+
+    @staticmethod
+    def appliquer_nom(nom_statut):
+        """Applique un effet composé depuis JSON."""
+
+        if nom_statut in StatutActif._statuts_custom:
+            definition = StatutActif._statuts_custom[nom_statut]
+            for etape in definition.get("effets", []):
+                base = etape.get("base")
+                params = etape.get("params", {})
+                #TODO : Penser à comment transmettre modificateur et l'utiliser           
+                StatutActif.appliquer_base(base, modificateur, params)
+            return
+        else:
+            raise ValueError(f"Statut inconnu: {nom_statut}")
+
+    @staticmethod
+    def appliquer_base(base, modificateur=None, params=None):
+        """Applique une étape élémentaire d'un effet composé."""
+        params = params if params is not None else {}
+
+        match base:
+            case "modif_mouvement":
+                montant = int(params.get("montant", 0))
+                duree = int(params.get("duree", 0))
+                StatutActif.modif_mouvement(montant, duree)
+                return True
+
+            case _:
+                raise ValueError(f"Effet de base inconnu: {base}")
+            
+        @staticmethod
+        def modif_mouvement(modificateurs, montant:int, duree:int):
+            duree=duree,
+            modificateurs={"mouv_max": int}
