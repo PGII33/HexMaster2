@@ -208,8 +208,6 @@ class Effet:
         try:
             return StatutActif.depuis_id(id_statut)
         except ValueError as exc:
-            if id_statut.lower() == "mouille":
-                return Effet.creer_statut_mouille()
             raise ValueError(f"Erreur: le statut '{id_statut}' n'a pas été chargé") from exc
 
     @staticmethod
