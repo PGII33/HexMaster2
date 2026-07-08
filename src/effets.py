@@ -1,6 +1,6 @@
 """ Fichier de gestion des effets """
-
-from src.auxiliaire import adjacents_hex
+from __future__ import annotations
+from src.auxiliaire import a_portee_hex
 from src.statut import StatutActif
 #pylint: disable=unused-argument
 
@@ -35,13 +35,11 @@ class Effet:
     @staticmethod
     def enregistrer_effets_custom(effets_definitions: dict):
         """Enregistre les définitions d'effets JSON composés."""
-        Effet._effets_custom = {
-            nom: definition for nom, definition in effets_definitions.items()
-        }
+        Effet._effets_custom = dict(effets_definitions.items())
 
     @staticmethod
     def appliquer_nom(nom_effet, origine, toutes_entitees, cible=None, joueurs=None):
-        """Applique un effet, natif ou composé depuis JSON."""
+        """Applique un effet composé depuis JSON."""
 
         if nom_effet in Effet._effets_custom:
             definition = Effet._effets_custom[nom_effet]
@@ -55,20 +53,32 @@ class Effet:
                 if condition and not Effet._evaluer_condition(condition, contexte):
                     continue
                 
-                resultat = Effet.appliquer_base(base, origine, toutes_entitees, cible, joueurs, params)
+                resultat = Effet.appliquer_base(
+                    base,
+                    origine,
+                    toutes_entitees,
+                    cible=cible,
+                    joueurs=joueurs,
+                    params=params,
+                )
                 
                 # Sauvegarder le résultat si demandé
                 save_result = etape.get("save_result")
                 if save_result:
                     contexte[save_result] = resultat
             return
-        else:
-            raise ValueError(f"Effet inconnu: {nom_effet}")
+
+        if hasattr(Effet, nom_effet):
+            methode = getattr(Effet, nom_effet)
+            return methode(origine, toutes_entitees, cible, joueurs)
+
+        raise ValueError(f"Effet inconnu: {nom_effet}")
 
     @staticmethod
-    def appliquer_base(base, origine, toutes_entitees, cible=None, joueurs=None, params=None):
+    def appliquer_base(base, origine, toutes_entitees, cible=None, **options):
         """Applique une étape élémentaire d'un effet composé."""
-        params = params if params is not None else {}
+        joueurs = options.get("joueurs")
+        params = options.get("params") or {}
 
         match base:
             case "degats_sur_meme_case":
@@ -76,6 +86,21 @@ class Effet:
                 cible_type = params.get("cible", "")
                 Effet.degats_sur_meme_case(origine, toutes_entitees, montant, cible_type)
                 return True
+
+            case "degats_sur_position":
+                degat_allies = bool(params.get("degat_allies", False))
+                rayon = int(params.get("rayon", 0))
+                degats = int(params.get("degats", 0))
+                cible_type = params.get("cible_type", "")
+                return Effet.degats_sur_position(
+                    origine,
+                    toutes_entitees,
+                    cible=cible,
+                    degat_allies=degat_allies,
+                    rayon=rayon,
+                    degats=degats,
+                    cible_type=cible_type,
+                )
 
             case "ajouter_pi_origine":
                 montant = int(params.get("montant", 0))
@@ -86,8 +111,60 @@ class Effet:
                 cible_type = params.get("cible_type", "")
                 entite1 = params.get("entite1", "")
                 entite2 = params.get("entite2")
-                resultat = Effet.transformer(origine, toutes_entitees, cible_type, cible, entite1, entite2)
+                resultat = Effet.transformer(
+                    origine,
+                    toutes_entitees,
+                    cible=cible,
+                    cible_type=cible_type,
+                    entite1=entite1,
+                    entite2=entite2,
+                )
                 return resultat
+
+            case "donner_statut":
+                statut = params.get("statut", "")
+                rayon = params.get("rayon", 0)
+                Effet.donner_statut(
+                    origine,
+                    toutes_entitees,
+                    statut,
+                    cible=cible,
+                    rayon=rayon,
+                    joueurs=joueurs,
+                )
+                return True
+
+            case "degats_sur_position_tag":
+                degat_allies = bool(params.get("degat_allies", False))
+                rayon = int(params.get("rayon", 0))
+                degats = int(params.get("degats", 0))
+                tag = params.get("tag", "")
+                cible_type = params.get("cible_type", "")
+                return Effet.degats_sur_position_tag(
+                    origine,
+                    toutes_entitees,
+                    cible=cible,
+                    degat_allies=degat_allies,
+                    rayon=rayon,
+                    degats=degats,
+                    tag=tag,
+                    cible_type=cible_type,
+                )
+
+            case "degats_allies_tag_sur_cible":
+                tag = params.get("tag", "")
+                degats = int(params.get("degats", 0))
+                cible_type = params.get("cible_type", "")
+                return Effet.degats_sur_position_tag(
+                    origine,
+                    toutes_entitees,
+                    cible=cible,
+                    degat_allies=True,
+                    rayon=int(params.get("rayon", 0)),
+                    degats=degats,
+                    tag=tag,
+                    cible_type=cible_type,
+                )
 
             case _:
                 raise ValueError(f"Effet de base inconnu: {base}")
@@ -110,8 +187,30 @@ class Effet:
                 continue
             damage(entite, montant)
 
-    def transformer(origine, toutes_entitees, cible_type, cible, entite1, entite2):
-        "Transforme les cibles_type ou entite1 en entite2. Retourne True si transformation réussie."
+    @staticmethod
+    def degats_sur_position(origine, toutes_entitees, cible=None, degat_allies=False,
+                            rayon=0, degats=0, cible_type=""):
+        """Inflige des dégâts à une cible selon les entités présentes dans un rayon."""
+        return Effet._degats_sur_position_avec_filtre(
+            origine,
+            toutes_entitees,
+            cible=cible,
+            degat_allies=degat_allies,
+            rayon=rayon,
+            degats=degats,
+            cible_type=cible_type,
+        )
+
+    @staticmethod
+    def transformer(origine, toutes_entitees, cible=None, **options):
+        """Transforme une entité cible en une autre. Retourne True si réussi."""
+        cible_type = options.get("cible_type", "")
+        entite1 = options.get("entite1", "")
+        entite2 = options.get("entite2")
+
+        if cible is None or not entite2:
+            return False
+
         for entite in toutes_entitees:
             if entite.get_pos() != cible.get_pos():
                 continue
@@ -134,11 +233,144 @@ class Effet:
             chargeur.charger_toutes_les_entites()
             nouvelle_entite = chargeur.creer_instance(entite2.lower(), cible.get_pos(), origine.get_equipe())
             if nouvelle_entite is not None:
-                print("Transformer", entite.get_nom(), "en", nouvelle_entite.get_nom())
                 toutes_entitees.append(nouvelle_entite)
                 entite.set_pv(0)
                 return True
         return False
+
+    @staticmethod
+    def degats_sur_position_tag(origine, toutes_entitees, cible=None, degat_allies=False,
+                                rayon=0, degats=0, tag="", cible_type=""):
+        """Inflige des dégâts à une cible selon les entités taguées présentes dans un rayon."""
+        return Effet._degats_sur_position_avec_filtre(
+            origine,
+            toutes_entitees,
+            cible=cible,
+            degat_allies=degat_allies,
+            rayon=rayon,
+            degats=degats,
+            tag=tag,
+            cible_type=cible_type,
+        )
+
+    @staticmethod
+    def _degats_sur_position_avec_filtre(origine, toutes_entitees, cible=None, degat_allies=False,
+                                         rayon=0, degats=0, tag="", cible_type=""):
+        if cible is None:
+            return False
+
+        try:
+            rayon = int(rayon)
+            degats = int(degats)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("Paramètre numérique invalide pour un effet de dégâts") from exc
+
+        tag_normalise = str(tag).strip().lower()
+        type_normalise = str(cible_type).strip().lower()
+        positions_affectees = set(a_portee_hex(cible.get_pos(), rayon))
+        equipe_origine = origine.get_equipe()
+
+        compteur_sources = 0
+        for entite in toutes_entitees:
+            if entite.get_equipe() != equipe_origine:
+                continue
+            if tag_normalise and not Effet._entite_possede_tag(entite, tag_normalise):
+                continue
+            compteur_sources += 1
+
+        total_dgts = compteur_sources * degats
+        if total_dgts <= 0:
+            return True
+
+        for entite in toutes_entitees:
+            if entite.get_pos() not in positions_affectees:
+                continue
+
+            est_allie = entite.get_equipe() == equipe_origine
+            if degat_allies and not est_allie:
+                continue
+            if not degat_allies and est_allie:
+                continue
+
+            if type_normalise == "creature" and not entite.est_creature():
+                continue
+            if type_normalise == "batiment" and not entite.est_batiment():
+                continue
+            if type_normalise == "case" and not entite.est_case():
+                continue
+
+            damage(entite, total_dgts)
+
+        return True
+
+    @staticmethod
+    def _entite_possede_tag(entite, tag_recherche):
+        for tag_entite in entite.get_tags():
+            if hasattr(tag_entite, "get_nom"):
+                nom_tag = tag_entite.get_nom()
+            else:
+                nom_tag = str(tag_entite)
+            if str(nom_tag).strip().lower() == tag_recherche:
+                return True
+        return False
+
+
+    @staticmethod
+    def donner_statut(origine, toute_entitees, statut, cible=None, **options):
+        """Donne un statut chargé dans un rayon autour de la cible."""
+        if not statut:
+            raise ValueError("Statut manquant pour l'effet donner_statut")
+
+        rayon = options.get("rayon", 0)
+        centre = cible if cible is not None else origine
+        if centre is None:
+            return False
+
+        try:
+            rayon = int(rayon)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"Rayon invalide pour l'effet donner_statut: {rayon}") from exc
+
+        positions_affectees = set(a_portee_hex(centre.get_pos(), rayon))
+
+        for entite in toute_entitees:
+            if entite.est_creature() and entite.get_pos() in positions_affectees:
+                entite.ajouter_statut(Effet._creer_statut_depuis_id(statut))
+
+        return True
+
+    @staticmethod
+    def _creer_statut_depuis_id(id_statut):
+        """Crée un statut à partir du registre JSON, avec fallback minimal."""
+        try:
+            return StatutActif.depuis_id(id_statut)
+        except ValueError as exc:
+            raise ValueError(f"Erreur: le statut '{id_statut}' n'a pas été chargé") from exc
+
+    @staticmethod
+    def pluie(origine, toutes_entitees, cible, joueurs=None):
+        """Applique le statut Mouille dans un rayon de 1 autour de la cible."""
+        if cible is None:
+            return
+
+        Effet.donner_statut(origine, toutes_entitees, "mouille", cible=cible, rayon=1)
+
+    @staticmethod
+    def pluie_de_fleches(origine, toutes_entitees, cible, joueurs=None):
+        """Inflige 2 dégâts à chaque cible ennemie dans le rayon ciblé, par archer allié."""
+        if cible is None:
+            return
+
+        Effet.degats_sur_position_tag(
+            origine,
+            toutes_entitees,
+            cible=cible,
+            degat_allies=False,
+            rayon=1,
+            degats=2,
+            tag="archer",
+            cible_type="creature",
+        )
 
     @staticmethod
     def _evaluer_condition(condition, contexte):
@@ -173,120 +405,3 @@ class Effet:
         
         return False
 
-    @staticmethod
-    def creer_statut_mouille():
-        """ Crée une instance du statut Mouille """
-        return StatutActif(
-            nom="Mouille",
-            duree=MOUILLE_DUREE,
-            modificateurs={"mouv_max": -1}
-        )
-
-    @staticmethod
-    def piquant(origine, toutes_entitees, cible=None, joueurs=None):
-        """ Effet piquant : inflige des dégâts aux créatures sur la même case
-
-        Args:
-            origine: L'entité (case) qui a la compétence piquant
-            toutes_entitees: Liste de toutes les entités du terrain
-            cible: Non utilisé pour cette compétence
-            joueurs: Non utilisé pour cette compétence
-        """
-        Effet.degats_sur_meme_case(origine, toutes_entitees, DGTS_PIQUANT, "creature")
-
-    @staticmethod
-    def instable(origine, toutes_entitees, cible=None, joueurs=None):
-        """ Effet instable : à la fin du tour, les bâtiments sur la même case perdent des PV
-
-        Args:
-            origine: L'entité qui possède la compétence
-            toutes_entitees: Liste de toutes les entités du terrain
-            cible: Non utilisé pour cette compétence
-            joueurs: Dictionnaire {numero_equipe: objet_joueur} pour retirer les PI
-        """
-        for entite in toutes_entitees:
-            if entite.get_pos() == origine.get_pos() and entite.est_batiment():
-                damage(entite, DGTS_INSTABLE)
-
-    @staticmethod
-    def abattage(origine, toutes_entitees, cible, joueurs=None):
-        """ Effet abattage : si la cible est une case forêt, la transforme en case plaine, l'utilisateur gagne des PI
-
-        Args:
-            origine: L'entité qui possède la compétence
-            toutes_entitees: Liste de toutes les entités du terrain
-            cible: L'entité ciblée par l'attaque
-            joueurs: Dictionnaire {numero_equipe: objet_joueur} pour donner les PI
-        """
-        # Import local pour éviter la dépendance circulaire
-        from src.chargeur.entite_chargeur import EntiteChargeur #pylint: disable=import-outside-toplevel
-
-        if cible is not None and cible.est_case() and cible.get_nom() == "Foret":
-            # Transformer la case forêt en case plaine
-            pos = cible.get_pos()
-            equipe = cible.get_equipe()
-
-            # Retirer la case forêt
-            cible.set_pv(0)
-
-            # Créer une nouvelle case plaine à la même position
-            chargeur = EntiteChargeur()
-            chargeur.charger_toutes_les_entites()
-            plaine = chargeur.creer_instance("plaine", pos, equipe)
-            if plaine is not None:
-                toutes_entitees.append(plaine)
-
-            ajouter_pi(joueurs, origine.get_equipe(), ABATTAGE_PI)
-
-    @staticmethod
-    def confort(origine, toutes_entitees, cible=None, joueurs=None):
-        """ Effet confort : à la fin du tour, le joueur gagne des PI
-
-        Args:
-            origine: L'entité qui possède la compétence
-            toutes_entitees: Liste de toutes les entités du terrain
-            cible: Non utilisé pour cette compétence
-            joueurs: Dictionnaire {numero_equipe: objet_joueur} pour donner les PI
-        """
-        ajouter_pi(joueurs, origine.get_equipe(), CONFORT_PI)
-
-
-    @staticmethod
-    def pluie_de_fleches(origine, toutes_entitees, cible, joueurs=None):
-        """ Effet pluie de flèches : inflige les dégats de toutes les "archer" alliées à une cible
-
-        Args:
-            origine: L'entité qui possède la compétence
-            toutes_entitees: Liste de toutes les entités du terrain
-            cible: L'entité ciblée par l'attaque
-            joueurs: Dictionnaire {numero_equipe: objet_joueur} pour retirer les PI
-        """
-        if cible is None:
-            return
-
-        equipe_origine = origine.get_equipe()
-        total_dgts = 0
-        for entite in toutes_entitees:
-            if (entite.get_equipe() == equipe_origine
-                and "archer" in entite.get_tags()
-            ):
-                if cible.est_creature():
-                    total_dgts += entite.get_combat()
-                elif cible.est_batiment():
-                    total_dgts += entite.get_demolition()
-                elif cible.est_case():
-                    total_dgts += entite.get_degradation()
-        damage(cible, total_dgts)
-
-    @staticmethod
-    def pluie(origine, toutes_entitees, cible, joueurs=None):
-        """ Applique le statut Mouille sur la case ciblée et les hexagones adjacents """
-        if cible is None:
-            return
-
-        positions_affectees = set(adjacents_hex(cible.get_pos()))
-        positions_affectees.add(cible.get_pos())
-
-        for entite in toutes_entitees:
-            if entite.est_creature() and entite.get_pos() in positions_affectees:
-                entite.ajouter_statut(Effet.creer_statut_mouille())

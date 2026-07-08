@@ -1,0 +1,16 @@
+{
+  "id": "pluie_de_fleches",
+  "phase": "ACTIF",
+  "effets": [
+    {
+      "base": "degats_sur_position_tag",
+      "params": {
+        "degat_allies": true,
+        "rayon": 1,
+        "degats": 2,
+        "tag": "archer",
+        "cible_type": "creature"
+      }
+    }
+  ]
+}

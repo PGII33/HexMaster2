@@ -9,19 +9,24 @@ from src.competences import Competence
 from src.phase import PhaseTour
 from src.tag import Tag
 from src.chargeur.effet_chargeur import EffetChargeur
+from src.chargeur.statut_chargeur import StatutChargeur
 from src.effets import Effet
+from src.statut import StatutActif
 
 
 class EntiteChargeur:
     """ Chargeur d'entites depuis des fichiers JSON """
 
-    def __init__(self, chemin_data="data/entites", chemin_mods="mods", chemin_effets_data="data/effets"):
+    def __init__(self, chemin_data="data/entites", chemin_mods="mods", chemin_effets_data="data/effets", chemin_statuts_data="data/statuts"):
         self.chemin_data = chemin_data
         self.chemin_mods = chemin_mods
         self.entites_chargees = {}
         self.mods_actifs = self.charger_mods_actifs()
         self.effet_chargeur = EffetChargeur(chemin_data=chemin_effets_data, chemin_mods=chemin_mods)
         self.effet_chargeur.charger_tous_les_effets()
+        self.statut_chargeur = StatutChargeur(chemin_data=chemin_statuts_data, chemin_mods=chemin_mods)
+        self.statut_chargeur.charger_tous_les_statuts()
+        StatutActif.enregistrer_statuts_custom(self.statut_chargeur.statuts_chargees)
         Effet.enregistrer_effets_custom(self.effet_chargeur.effets_chargees)
 
     def charger_mods_actifs(self):
