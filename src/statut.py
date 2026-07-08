@@ -154,9 +154,7 @@ class StatutActif:
     @staticmethod
     def enregistrer_statuts_custom(statuts_definitions: dict):
         """Enregistre les définitions de statuts JSON."""
-        StatutActif._statuts_custom = {
-            nom.lower(): definition for nom, definition in statuts_definitions.items()
-        }
+        StatutActif._statuts_custom = dict(statuts_definitions.items())
 
     @classmethod
     def depuis_id(cls, id_statut: str):

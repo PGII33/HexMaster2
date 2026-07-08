@@ -1,7 +1,7 @@
 """ Fichier de gestion des effets """
 from __future__ import annotations
 from src.const import MOUILLE_DUREE
-from src.auxiliaire import adjacents_hex
+from src.auxiliaire import a_portee_hex
 from src.statut import StatutActif
 #pylint: disable=unused-argument
 
@@ -36,9 +36,7 @@ class Effet:
     @staticmethod
     def enregistrer_effets_custom(effets_definitions: dict):
         """Enregistre les définitions d'effets JSON composés."""
-        Effet._effets_custom = {
-            nom: definition for nom, definition in effets_definitions.items()
-        }
+        Effet._effets_custom = dict(effets_definitions.items())
 
     @staticmethod
     def appliquer_nom(nom_effet, origine, toutes_entitees, cible=None, joueurs=None):
@@ -56,7 +54,14 @@ class Effet:
                 if condition and not Effet._evaluer_condition(condition, contexte):
                     continue
                 
-                resultat = Effet.appliquer_base(base, origine, toutes_entitees, cible, joueurs, params)
+                resultat = Effet.appliquer_base(
+                    base,
+                    origine,
+                    toutes_entitees,
+                    cible=cible,
+                    joueurs=joueurs,
+                    params=params,
+                )
                 
                 # Sauvegarder le résultat si demandé
                 save_result = etape.get("save_result")
@@ -71,9 +76,10 @@ class Effet:
         raise ValueError(f"Effet inconnu: {nom_effet}")
 
     @staticmethod
-    def appliquer_base(base, origine, toutes_entitees, cible=None, joueurs=None, params=None):
+    def appliquer_base(base, origine, toutes_entitees, cible=None, **options):
         """Applique une étape élémentaire d'un effet composé."""
-        params = params if params is not None else {}
+        joueurs = options.get("joueurs")
+        params = options.get("params") or {}
 
         match base:
             case "degats_sur_meme_case":
@@ -91,13 +97,27 @@ class Effet:
                 cible_type = params.get("cible_type", "")
                 entite1 = params.get("entite1", "")
                 entite2 = params.get("entite2")
-                resultat = Effet.transformer(origine, toutes_entitees, cible_type, cible, entite1, entite2)
+                resultat = Effet.transformer(
+                    origine,
+                    toutes_entitees,
+                    cible=cible,
+                    cible_type=cible_type,
+                    entite1=entite1,
+                    entite2=entite2,
+                )
                 return resultat
 
             case "donner_statut":
                 statut = params.get("statut", "")
-                sur = params.get("sur", params.get("destination", "cible"))
-                Effet.donner_statut(origine, toutes_entitees, statut, cible, joueurs, sur=sur)
+                rayon = params.get("rayon", 0)
+                Effet.donner_statut(
+                    origine,
+                    toutes_entitees,
+                    statut,
+                    cible=cible,
+                    rayon=rayon,
+                    joueurs=joueurs,
+                )
                 return True
 
             case _:
@@ -122,8 +142,15 @@ class Effet:
             damage(entite, montant)
 
     @staticmethod
-    def transformer(origine, toutes_entitees, cible_type, cible, entite1, entite2):
-        "Transforme les cibles_type ou entite1 en entite2. Retourne True si transformation réussie."
+    def transformer(origine, toutes_entitees, cible=None, **options):
+        """Transforme une entité cible en une autre. Retourne True si réussi."""
+        cible_type = options.get("cible_type", "")
+        entite1 = options.get("entite1", "")
+        entite2 = options.get("entite2")
+
+        if cible is None or not entite2:
+            return False
+
         for entite in toutes_entitees:
             if entite.get_pos() != cible.get_pos():
                 continue
@@ -152,34 +179,38 @@ class Effet:
         return False
 
     @staticmethod
-    def donner_statut(origine, toute_entitees, statut, cible=None, joueurs=None, sur="cible"):
-        """Donne un statut chargé à une cible ou à une zone."""
+    def donner_statut(origine, toute_entitees, statut, cible=None, **options):
+        """Donne un statut chargé dans un rayon autour de la cible."""
         if not statut:
             raise ValueError("Statut manquant pour l'effet donner_statut")
 
-        if sur == "origine":
-            origine.ajouter_statut(StatutActif.depuis_id(statut))
-            return True
+        rayon = options.get("rayon", 0)
+        centre = cible if cible is not None else origine
+        if centre is None:
+            return False
 
-        if sur == "cible":
-            if cible is None:
-                return False
-            cible.ajouter_statut(StatutActif.depuis_id(statut))
-            return True
+        try:
+            rayon = int(rayon)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"Rayon invalide pour l'effet donner_statut: {rayon}") from exc
 
-        if sur == "adjacents":
-            if cible is None:
-                return False
+        positions_affectees = set(a_portee_hex(centre.get_pos(), rayon))
 
-            positions_affectees = set(adjacents_hex(cible.get_pos()))
-            positions_affectees.add(cible.get_pos())
+        for entite in toute_entitees:
+            if entite.est_creature() and entite.get_pos() in positions_affectees:
+                entite.ajouter_statut(Effet._creer_statut_depuis_id(statut))
 
-            for entite in toute_entitees:
-                if entite.est_creature() and entite.get_pos() in positions_affectees:
-                    entite.ajouter_statut(StatutActif.depuis_id(statut))
-            return True
+        return True
 
-        raise ValueError(f"Destination de statut inconnue: {sur}")
+    @staticmethod
+    def _creer_statut_depuis_id(id_statut):
+        """Crée un statut à partir du registre JSON, avec fallback minimal."""
+        try:
+            return StatutActif.depuis_id(id_statut)
+        except ValueError as exc:
+            if id_statut.lower() == "mouille":
+                return Effet.creer_statut_mouille()
+            raise ValueError(f"Erreur: le statut '{id_statut}' n'a pas été chargé") from exc
 
     @staticmethod
     def _evaluer_condition(condition, contexte):

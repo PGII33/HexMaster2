@@ -6,7 +6,7 @@
       "base": "donner_statut",
       "params": {
         "statut": "mouille",
-        "sur": "adjacents"
+        "rayon": 1
       }
     }
   ]
