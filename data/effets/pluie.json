@@ -5,7 +5,8 @@
     {
       "base": "donner_statut",
       "params": {
-        "statut": "mouille"
+        "statut": "mouille",
+        "sur": "adjacents"
       }
     }
   ]

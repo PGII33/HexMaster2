@@ -1,13 +1,10 @@
 {
   "id": "mouille",
+  "nom": "Mouille",
   "duree": 3,
-  "effets": [
-    {
-      "base": "modif_mouvement",
-      "params": {
-        "montant": -1,
-        "est_buff": false
-      }
-    }
-  ]
+  "phase": "FIN_TOUR",
+  "modificateurs": {
+    "mouv_max": -1
+  },
+  "est_buff": false
 }

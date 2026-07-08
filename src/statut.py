@@ -1,26 +1,34 @@
 """ Fichier de gestion des statuts actifs """
 
+from __future__ import annotations
+
 from src.phase import PhaseTour
 
 
 class StatutActif:
-    """ Représente un statut appliqué à une entité """
+    """Représente un statut appliqué à une entité."""
+
+    _statuts_custom: dict[str, dict] = {}
 
     def __init__(self, nom: str, duree: int, phase: PhaseTour = PhaseTour.FIN_TOUR,
-                 modificateurs: dict[str, int]|None = None, nom_effet: str|None = None, est_buff:bool = False):
-        """ Initialise un statut actif, par défaut, il est considéré comme debuff"""
+                 modificateurs: dict[str, int] | None = None, nom_effet: str | None = None,
+                 est_buff: bool = False, id_statut: str | None = None):
+        """Initialise un statut actif."""
+        self.id_statut = (id_statut or nom).lower().replace(" ", "_")
         self.nom = nom
         self.duree_restante = duree
         self.phase = phase
         self.modificateurs = dict(modificateurs) if modificateurs is not None else {}
-        self.est_buff = est_buff
-        self.nom_effet = nom_effet
-
-        _statuts_custom = {}
+        self._est_buff = est_buff
+        self.nom_effet = nom_effet.lower() if isinstance(nom_effet, str) and nom_effet else None
 
     def get_nom(self):
         """ Retourne le nom du statut """
         return self.nom
+
+    def get_id(self):
+        """Retourne l'identifiant du statut."""
+        return self.id_statut
 
     def get_duree_restante(self):
         """ Retourne le nombre de tours restants """
@@ -28,11 +36,11 @@ class StatutActif:
 
     def est_buff(self):
         """ Retourne vrai si le statut est un buff, faux si c'est un debuff """
-        return self.est_buff
+        return self._est_buff
 
     def est_debuff(self):
         """ Retourne vrai si le statut est un debuff, faux si c'est un buff """
-        return not self.est_buff
+        return not self._est_buff
 
     def set_duree_restante(self, duree: int):
         """ Modifie la durée restante du statut """
@@ -77,46 +85,87 @@ class StatutActif:
         """ Retourne tous les modificateurs du statut """
         return dict(self.modificateurs)
 
-# -------- Partie Construction des statuts -------- 
+    @staticmethod
+    def _nom_depuis_id(identifiant: str):
+        return " ".join(mot.capitalize() for mot in identifiant.replace("_", " ").split())
+
+    @staticmethod
+    def _normaliser_phase(phase):
+        if phase is None:
+            return PhaseTour.FIN_TOUR
+        if isinstance(phase, PhaseTour):
+            return phase
+        if isinstance(phase, str):
+            phase_normalisee = phase.strip().upper()
+            if hasattr(PhaseTour, phase_normalisee):
+                return getattr(PhaseTour, phase_normalisee)
+        raise ValueError(f"Phase invalide pour un statut: {phase}")
+
+    @classmethod
+    def normaliser_definition(cls, definition: dict, source: str | None = None):
+        """Valide et normalise une définition JSON de statut."""
+        if not isinstance(definition, dict):
+            origine = f" dans {source}" if source else ""
+            raise ValueError(f"Statut invalide{origine}: format JSON attendu")
+
+        id_statut = definition.get("id")
+        if not id_statut:
+            origine = f" dans {source}" if source else ""
+            raise ValueError(f"Statut invalide{origine}: champ 'id' manquant")
+
+        duree = definition.get("duree")
+        if duree is None:
+            origine = f" dans {source}" if source else ""
+            raise ValueError(f"Statut '{id_statut}' invalide{origine}: champ 'duree' manquant")
+
+        modificateurs = definition.get("modificateurs", {})
+        if modificateurs is None:
+            modificateurs = {}
+        if not isinstance(modificateurs, dict):
+            origine = f" dans {source}" if source else ""
+            raise ValueError(f"Statut '{id_statut}' invalide{origine}: champ 'modificateurs' invalide")
+
+        valeur_nom_effet = definition.get("nom_effet", definition.get("effet"))
+
+        return {
+            "id": str(id_statut).lower(),
+            "nom": definition.get("nom", cls._nom_depuis_id(str(id_statut).lower())),
+            "duree": int(duree),
+            "phase": cls._normaliser_phase(definition.get("phase")),
+            "modificateurs": dict(modificateurs),
+            "est_buff": bool(definition.get("est_buff", False)),
+            "nom_effet": str(valeur_nom_effet).lower() if valeur_nom_effet else None,
+        }
+
+    @classmethod
+    def depuis_definition(cls, definition: dict, source: str | None = None):
+        """Construit une instance depuis une définition JSON normalisée."""
+        definition_normalisee = cls.normaliser_definition(definition, source=source)
+        return cls(
+            nom=definition_normalisee["nom"],
+            duree=definition_normalisee["duree"],
+            phase=definition_normalisee["phase"],
+            modificateurs=definition_normalisee["modificateurs"],
+            nom_effet=definition_normalisee["nom_effet"],
+            est_buff=definition_normalisee["est_buff"],
+            id_statut=definition_normalisee["id"],
+        )
 
     @staticmethod
     def enregistrer_statuts_custom(statuts_definitions: dict):
-        """Enregistre les définitions de statuts JSON composés."""
+        """Enregistre les définitions de statuts JSON."""
         StatutActif._statuts_custom = {
-            nom: definition for nom, definition in statuts_definitions.items()
+            nom.lower(): definition for nom, definition in statuts_definitions.items()
         }
 
-    @staticmethod
-    def appliquer_nom(nom_statut):
-        """Applique un effet composé depuis JSON."""
+    @classmethod
+    def depuis_id(cls, id_statut: str):
+        """Construit un statut à partir de son identifiant chargé."""
+        if not id_statut:
+            raise ValueError("Statut invalide sans identifiant")
 
-        if nom_statut in StatutActif._statuts_custom:
-            definition = StatutActif._statuts_custom[nom_statut]
-            for etape in definition.get("effets", []):
-                base = etape.get("base")
-                params = etape.get("params", {})
-                #TODO : Penser à comment transmettre modificateur et l'utiliser           
-                StatutActif.appliquer_base(base, modificateur, params)
-            return
-        else:
-            raise ValueError(f"Statut inconnu: {nom_statut}")
+        definition = cls._statuts_custom.get(id_statut.lower())
+        if definition is None:
+            raise ValueError(f"Statut inconnu: {id_statut}")
 
-    @staticmethod
-    def appliquer_base(base, modificateur=None, params=None):
-        """Applique une étape élémentaire d'un effet composé."""
-        params = params if params is not None else {}
-
-        match base:
-            case "modif_mouvement":
-                montant = int(params.get("montant", 0))
-                duree = int(params.get("duree", 0))
-                StatutActif.modif_mouvement(montant, duree)
-                return True
-
-            case _:
-                raise ValueError(f"Effet de base inconnu: {base}")
-            
-        @staticmethod
-        def modif_mouvement(modificateurs, montant:int, duree:int):
-            duree=duree,
-            modificateurs={"mouv_max": int}
+        return cls.depuis_definition(definition)

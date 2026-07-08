@@ -101,7 +101,7 @@ class Base:
         """ Retourne le statut actif portant un nom donné """
         nom_normalise = nom.lower()
         for statut in self.statuts_actif:
-            if statut.get_nom().lower() == nom_normalise:
+            if statut.get_nom().lower() == nom_normalise or statut.get_id() == nom_normalise:
                 return statut
         return None
 
@@ -136,14 +136,13 @@ class Base:
                 continue
 
             nom_effet = statut.get_nom_effet()
-            if nom_effet is None or not hasattr(Effet, nom_effet):
+            if nom_effet is None:
                 continue
 
-            methode = getattr(Effet, nom_effet)
-            if joueurs is not None:
-                methode(self, toutes_entitees, None, joueurs)
-            else:
-                methode(self, toutes_entitees)
+            try:
+                Effet.appliquer_nom(nom_effet, self, toutes_entitees, None, joueurs)
+            except ValueError:
+                continue
 
     def decrementer_statuts(self, phase):
         """ Décrémente et purge les statuts d'une phase donnée """

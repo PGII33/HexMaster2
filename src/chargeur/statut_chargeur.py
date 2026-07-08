@@ -2,11 +2,12 @@
 
 import json
 import os
+from src.statut import StatutActif
 
 class StatutChargeur:
-    """Chargeur de statuts composés depuis des fichiers JSON."""
+    """Chargeur de statuts depuis des fichiers JSON."""
 
-    def __init__(self, chemin_data="data/effestatuts", chemin_mods="mods"):
+    def __init__(self, chemin_data="data/statuts", chemin_mods="mods"):
         self.chemin_data = chemin_data
         self.chemin_mods = chemin_mods
         self.statuts_chargees = {}
@@ -29,7 +30,7 @@ class StatutChargeur:
         self.charger_depuis_dossier(self.chemin_data)
 
         for mod in self.mods_actifs:
-            self.charger_depuis_dossier(os.path.join(self.chemin_mods, mod, "data", "effets"))
+            self.charger_depuis_dossier(os.path.join(self.chemin_mods, mod, "data", "statuts"))
 
     def charger_depuis_dossier(self, chemin):
         """Parcourt récursivement un dossier et charge tous les JSON de statut."""
@@ -43,20 +44,13 @@ class StatutChargeur:
                     self.charger_statut(chemin_complet)
 
     def charger_statut(self, fichier_json):
-        """Charge un effet composé depuis un fichier JSON."""
+        """Charge un statut depuis un fichier JSON."""
         with open(fichier_json, "r", encoding="utf-8") as f:
             definition = json.load(f)
 
-        id_statut = definition.get("id")
-        if not id_statut:
-            raise ValueError(f"Statut invalide sans 'id': {fichier_json}")
+        definition_normalisee = StatutActif.normaliser_definition(definition, source=fichier_json)
+        self.statuts_chargees[definition_normalisee["id"]] = definition_normalisee
 
-        duree_str = definition.get("duree")
-        if duree_str is None:
-            raise ValueError(f"Statut '{id_statut}' invalide: champ 'duree' manquant")
-
-        base = definition.get("base")
-        modificateur = definition.get("modificateur")
-
-        definition["id"] = id_statut.lower()
-        self.statuts_chargees[definition["id"]] = definition
+    def creer_statut(self, id_statut):
+        """Crée une instance de statut depuis son identifiant."""
+        return StatutActif.depuis_id(id_statut)

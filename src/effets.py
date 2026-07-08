@@ -2,6 +2,7 @@
 from __future__ import annotations
 from src.const import MOUILLE_DUREE
 from src.auxiliaire import adjacents_hex
+from src.statut import StatutActif
 #pylint: disable=unused-argument
 
 def damage(cible, montant):
@@ -62,8 +63,12 @@ class Effet:
                 if save_result:
                     contexte[save_result] = resultat
             return
-        else:
-            raise ValueError(f"Effet inconnu: {nom_effet}")
+
+        if hasattr(Effet, nom_effet):
+            methode = getattr(Effet, nom_effet)
+            return methode(origine, toutes_entitees, cible, joueurs)
+
+        raise ValueError(f"Effet inconnu: {nom_effet}")
 
     @staticmethod
     def appliquer_base(base, origine, toutes_entitees, cible=None, joueurs=None, params=None):
@@ -91,7 +96,8 @@ class Effet:
 
             case "donner_statut":
                 statut = params.get("statut", "")
-                Effet.donner_statut(origine, toutes_entitees, statut, cible)
+                sur = params.get("sur", params.get("destination", "cible"))
+                Effet.donner_statut(origine, toutes_entitees, statut, cible, joueurs, sur=sur)
                 return True
 
             case _:
@@ -140,17 +146,40 @@ class Effet:
             chargeur.charger_toutes_les_entites()
             nouvelle_entite = chargeur.creer_instance(entite2.lower(), cible.get_pos(), origine.get_equipe())
             if nouvelle_entite is not None:
-                print("Transformer", entite.get_nom(), "en", nouvelle_entite.get_nom())
                 toutes_entitees.append(nouvelle_entite)
                 entite.set_pv(0)
                 return True
         return False
 
     @staticmethod
-    def donner_statut(origine, toute_entitees, statut, cible):
-        if statut == "mouille":
-            Effet.pluie(origine, toute_entitees, cible)
-        pass
+    def donner_statut(origine, toute_entitees, statut, cible=None, joueurs=None, sur="cible"):
+        """Donne un statut chargé à une cible ou à une zone."""
+        if not statut:
+            raise ValueError("Statut manquant pour l'effet donner_statut")
+
+        if sur == "origine":
+            origine.ajouter_statut(StatutActif.depuis_id(statut))
+            return True
+
+        if sur == "cible":
+            if cible is None:
+                return False
+            cible.ajouter_statut(StatutActif.depuis_id(statut))
+            return True
+
+        if sur == "adjacents":
+            if cible is None:
+                return False
+
+            positions_affectees = set(adjacents_hex(cible.get_pos()))
+            positions_affectees.add(cible.get_pos())
+
+            for entite in toute_entitees:
+                if entite.est_creature() and entite.get_pos() in positions_affectees:
+                    entite.ajouter_statut(StatutActif.depuis_id(statut))
+            return True
+
+        raise ValueError(f"Destination de statut inconnue: {sur}")
 
     @staticmethod
     def _evaluer_condition(condition, contexte):
@@ -188,11 +217,10 @@ class Effet:
     @staticmethod
     def creer_statut_mouille():
         """ Crée une instance du statut Mouille """
-        return StatutActif(
-            nom="Mouille",
-            duree=MOUILLE_DUREE,
-            modificateurs={"mouv_max": -1}
-        )
+        try:
+            return StatutActif.depuis_id("mouille")
+        except ValueError:
+            print("Erreur: Le statut 'mouille' n'a pas été chargé. Assurez-vous que le fichier JSON correspondant est présent.")
 
     @staticmethod
     def piquant(origine, toutes_entitees, cible=None, joueurs=None):
@@ -296,9 +324,4 @@ class Effet:
         if cible is None:
             return
 
-        positions_affectees = set(adjacents_hex(cible.get_pos()))
-        positions_affectees.add(cible.get_pos())
-
-        for entite in toutes_entitees:
-            if entite.est_creature() and entite.get_pos() in positions_affectees:
-                entite.ajouter_statut(Effet.creer_statut_mouille())
+        Effet.donner_statut(origine, toutes_entitees, "mouille", cible, joueurs, sur="adjacents")

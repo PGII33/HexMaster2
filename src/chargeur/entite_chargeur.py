@@ -11,6 +11,7 @@ from src.tag import Tag
 from src.chargeur.effet_chargeur import EffetChargeur
 from src.chargeur.statut_chargeur import StatutChargeur
 from src.effets import Effet
+from src.statut import StatutActif
 
 
 class EntiteChargeur:
@@ -25,6 +26,7 @@ class EntiteChargeur:
         self.effet_chargeur.charger_tous_les_effets()
         self.statut_chargeur = StatutChargeur(chemin_data=chemin_statuts_data, chemin_mods=chemin_mods)
         self.statut_chargeur.charger_tous_les_statuts()
+        StatutActif.enregistrer_statuts_custom(self.statut_chargeur.statuts_chargees)
         Effet.enregistrer_effets_custom(self.effet_chargeur.effets_chargees)
 
     def charger_mods_actifs(self):
