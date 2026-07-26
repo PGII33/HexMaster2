@@ -87,7 +87,7 @@ class TestTerrain(unittest.TestCase):
                     control=0, control_max=10, comp=[])
         creature = Creature(pv=10, nom="creature", pos=(0, 0), cout=0, equipe=1, portee=0,
                             control=0, comp=[], combat=0, demolition=0, degradation=0, mouv=2)
-        creature.ajouter_statut(Effet.creer_statut_mouille())
+        creature.ajouter_statut(Effet._creer_statut_depuis_id("mouille"))
 
         terrain = Terrain(entites=[case, creature])
 

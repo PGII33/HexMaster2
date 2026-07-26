@@ -6,9 +6,17 @@ from random import randint
 import unittest
 from src.creature import Creature
 from src.effets import Effet
+from src.statut import StatutActif
+from src.chargeur.statut_chargeur import StatutChargeur
 from tests.utils import generate_random_string, MIN_INT, MAX_INT, BOUCLE_TEST, TAILLE_STR
 
 class TestCreature(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        chargeur = StatutChargeur()
+        chargeur.charger_tous_les_statuts()
+        StatutActif.enregistrer_statuts_custom(chargeur.statuts_chargees)
+
     def test__init__(self):
         for _ in range(BOUCLE_TEST):
             pv = randint(MIN_INT, MAX_INT)
@@ -103,7 +111,7 @@ class TestCreature(unittest.TestCase):
                             combat=0, demolition=0, degradation=0, portee=0,
                             control=0, mouv=2)
 
-        creature.ajouter_statut(Effet.creer_statut_mouille())
+        creature.ajouter_statut(Effet._creer_statut_depuis_id("mouille"))
 
         self.assertEqual(creature.get_mouv_max(), 1)
         self.assertEqual(creature.get_mouv(), 1)
@@ -113,7 +121,7 @@ class TestCreature(unittest.TestCase):
                             combat=0, demolition=0, degradation=0, portee=0,
                             control=0, mouv=2)
 
-        creature.ajouter_statut(Effet.creer_statut_mouille())
+        creature.ajouter_statut(Effet._creer_statut_depuis_id("mouille"))
         creature.retirer_statut("Mouille")
 
         self.assertEqual(creature.get_mouv_max(), 2)

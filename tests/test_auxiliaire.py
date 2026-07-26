@@ -486,3 +486,75 @@ class TestAuxiliaire(unittest.TestCase):
         self.assertEqual(len(entites_a_portee5), nb_cases_attendues,
                          f"Avec portée 2, il devrait y avoir {nb_cases_attendues} cases à portée, " +
                          f"mais on en trouve {len(entites_a_portee5)}")
+
+    def test_get_cases_deplacement_ne_traverse_pas_les_obstacles(self):
+        cases = [
+            Case(pv=10, nom="Origine", pos=(0, 0), cout=0,
+                equipe=0, control=0, control_max=10, comp=[]),
+            Case(pv=10, nom="Bloquee", pos=(1, 0), cout=0,
+                equipe=0, control=0, control_max=10, comp=[]),
+            Case(pv=10, nom="DerriereObstacle", pos=(2, 0), cout=0,
+                equipe=0, control=0, control_max=10, comp=[]),
+        ]
+
+        creature = Creature(pv=10, nom="Marcheur", pos=(0, 0), cout=1, equipe=1,
+                        combat=1, demolition=0, degradation=0, portee=1,
+                        control=1, mouv=3)
+        obstacle = Creature(pv=10, nom="Obstacle", pos=(1, 0), cout=1, equipe=2,
+                        combat=1, demolition=0, degradation=0, portee=1,
+                        control=1, mouv=1)
+        terrain = Terrain(entites=cases + [creature, obstacle])
+
+        cases_deplacement = aux.get_cases_deplacement(creature, terrain)
+
+        self.assertNotIn((1, 0), cases_deplacement,
+                    "Une case occupée par une créature ne doit pas être traversable")
+        self.assertNotIn((2, 0), cases_deplacement,
+                    "Une case derrière un obstacle bloquant ne doit pas être atteignable")
+
+    def test_get_cases_deplacement_ne_traverse_pas_le_vide(self):
+        cases = [
+            Case(pv=10, nom="Origine", pos=(0, 0), cout=0,
+                equipe=0, control=0, control_max=10, comp=[]),
+            Case(pv=10, nom="Isolee", pos=(2, 0), cout=0,
+                equipe=0, control=0, control_max=10, comp=[]),
+        ]
+
+        creature = Creature(pv=10, nom="Marcheur", pos=(0, 0), cout=1, equipe=1,
+                        combat=1, demolition=0, degradation=0, portee=1,
+                        control=1, mouv=3)
+        terrain = Terrain(entites=cases + [creature])
+
+        cases_deplacement = aux.get_cases_deplacement(creature, terrain)
+
+        self.assertIn((0, 0), cases_deplacement,
+                    "La case d'origine doit rester accessible")
+        self.assertNotIn((2, 0), cases_deplacement,
+                    "Une case séparée par du vide ne doit pas être atteignable")
+
+    def test_get_cout_deplacement_prend_en_compte_le_chemin_reel(self):
+        cases = [
+            Case(pv=10, nom="Origine", pos=(0, 0), cout=0,
+                equipe=0, control=0, control_max=10, comp=[]),
+            Case(pv=10, nom="Bloquee", pos=(1, 0), cout=0,
+                equipe=0, control=0, control_max=10, comp=[]),
+            Case(pv=10, nom="Contournement1", pos=(0, 1), cout=0,
+                equipe=0, control=0, control_max=10, comp=[]),
+            Case(pv=10, nom="Contournement2", pos=(1, 1), cout=0,
+                equipe=0, control=0, control_max=10, comp=[]),
+            Case(pv=10, nom="Destination", pos=(2, 0), cout=0,
+                equipe=0, control=0, control_max=10, comp=[]),
+        ]
+
+        creature = Creature(pv=10, nom="Marcheur", pos=(0, 0), cout=1, equipe=1,
+                        combat=1, demolition=0, degradation=0, portee=1,
+                        control=1, mouv=4)
+        obstacle = Batiment(pv=20, nom="Mur", pos=(1, 0), cout=1, equipe=2,
+                        combat=0, demolition=0, degradation=0, portee=0,
+                        control=1, comp=[])
+        terrain = Terrain(entites=cases + [creature, obstacle])
+
+        cout = aux.get_cout_deplacement(creature, terrain, (2, 0))
+
+        self.assertEqual(cout, 3,
+                    "Le coût doit suivre le chemin de contournement réel, pas la distance hex directe")

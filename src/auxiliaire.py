@@ -1,5 +1,7 @@
 """ Fichier de fonctions auxiliaires """
 
+from collections import deque
+
 
 def distance_hex(a: tuple[int, int], b: tuple[int, int]) -> int:
     """ Calcule la distance entre deux hexagones """
@@ -41,6 +43,52 @@ def adjacents_hex(pos: tuple[int, int]) -> list[tuple[int, int]]:
     return a_distance_hex(pos, 1)
 
 
+def _infos_deplacement(terrain, creature) -> tuple[set[tuple[int, int]], set[tuple[int, int]]]:
+    """Construit les ensembles utiles pour le calcul de déplacement."""
+    positions_cases = set()
+    positions_bloquees = set()
+
+    for entite in terrain.get_entites():
+        position = entite.get_pos()
+        if entite.est_case():
+            positions_cases.add(position)
+        elif (entite.est_creature() or entite.est_batiment()) and entite != creature:
+            positions_bloquees.add(position)
+
+    return positions_cases, positions_bloquees
+
+
+def _distances_deplacement(creature, terrain) -> dict[tuple[int, int], int]:
+    """Calcule le coût minimal vers chaque case atteignable en tenant compte des obstacles."""
+    mouvement_max = creature.get_mouv()
+    position_origine = creature.get_pos()
+    positions_cases, positions_bloquees = _infos_deplacement(terrain, creature)
+
+    if position_origine not in positions_cases:
+        return {}
+
+    distances = {position_origine: 0}
+    a_visiter = deque([position_origine])
+
+    while a_visiter:
+        position = a_visiter.popleft()
+        distance = distances[position]
+
+        if distance >= mouvement_max:
+            continue
+
+        for voisine in adjacents_hex(position):
+            if voisine in distances:
+                continue
+            if voisine not in positions_cases or voisine in positions_bloquees:
+                continue
+
+            distances[voisine] = distance + 1
+            a_visiter.append(voisine)
+
+    return distances
+
+
 def get_cases_deplacement(creature, terrain) -> list:
     """ Retourne les cases où la créature peut se déplacer
 
@@ -51,32 +99,12 @@ def get_cases_deplacement(creature, terrain) -> list:
     Returns:
         Liste des positions (q, r) libres et accessibles
     """
-    portee_mouvement = creature.get_mouv()
-    pos_origine = creature.get_pos()
+    return list(_distances_deplacement(creature, terrain).keys())
 
-    # Toutes les positions théoriques dans le rayon de mouvement
-    positions_theoriques = a_portee_hex(pos_origine, portee_mouvement)
 
-    # Filtrer pour ne garder que les cases valides
-    cases_libres = []
-    for pos in positions_theoriques:
-        case_existe = False
-        occupe = False
-
-        for entite in terrain.get_entites():
-            if entite.get_pos() == pos:
-                # Vérifier qu'il y a une case à cette position
-                if entite.est_case():
-                    case_existe = True
-                # Vérifier si occupée par créature ou bâtiment
-                if (entite.est_creature() or entite.est_batiment()) and entite != creature:
-                    occupe = True
-
-        # Ajouter seulement si case existe ET n'est pas occupée
-        if case_existe and not occupe:
-            cases_libres.append(pos)
-
-    return cases_libres
+def get_cout_deplacement(creature, terrain, destination: tuple[int, int]) -> int | None:
+    """Retourne le coût minimal pour atteindre une destination, ou None si inaccessible."""
+    return _distances_deplacement(creature, terrain).get(destination)
 
 
 def get_entites_a_portee(creature, terrain) -> list:
