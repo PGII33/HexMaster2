@@ -2,8 +2,8 @@
 
 from src.auxiliaire import (
     get_cases_deplacement,
+    get_cout_deplacement,
     get_entites_a_portee,
-    distance_hex,
     adjacents_hex
 )
 from src.const import PI_TOUR
@@ -76,11 +76,18 @@ class ControleurJeu:
             return
 
         # Calculer et appliquer le déplacement
-        distance = distance_hex(self.entite_selectionnee.get_pos(), destination)
+        cout_deplacement = get_cout_deplacement(
+            self.entite_selectionnee,
+            self.jeu.get_terrain(),
+            destination
+        )
+        if cout_deplacement is None:
+            return
+
         self.entite_selectionnee.set_pos(destination)
 
         # Réduire les points de mouvement
-        mouv_restant = self.entite_selectionnee.get_mouv() - distance
+        mouv_restant = self.entite_selectionnee.get_mouv() - cout_deplacement
         self.entite_selectionnee.set_mouv(max(0, mouv_restant))
 
         # Un seul point d'entrée pour garder les overlays cohérents.
